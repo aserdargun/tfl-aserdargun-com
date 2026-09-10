@@ -30,6 +30,10 @@ import { ExportDialog } from "./components/ExportDialog";
 import { lessons } from "./lessons/lessons";
 import { lessonCheckpoint } from "./lessons/checkpoint";
 import type { Locale } from "./components/i18n";
+import { LabShell, LearningContextNotice } from "@aserdargun/lab-ui";
+import { manifest, experiments } from "./ils/catalog";
+import { readTflContext, contextExplanation, gpuHandoff } from "./ils/context";
+import { readEntry } from "./ils/routing";
 type Mode = "follow" | "load" | "memory" | "scheduler" | "metrics" | "labs";
 const modes: { id: Mode; name: [string, string] }[] = [
   { id: "follow", name: ["Follow", "İzle"] },
@@ -56,21 +60,47 @@ const initialLocale = (): Locale => {
   }
 };
 export default function App() {
+  const [entry] = useState(() => readEntry(new URL(location.href)));
+  const [learningContext] = useState(() =>
+    readTflContext(new URL(location.href)),
+  );
   const [locale, setLocale] = useState<Locale>(initialLocale);
   const t = (en: string, tr: string) => (locale === "en" ? en : tr);
-  const [s, setS] = useState(() => createSimulation(scenarioConfig("single")));
-  const [initial, setInitial] = useState<Simulation>(() =>
-    createSimulation(scenarioConfig("single")),
+  const [s, setS] = useState(() =>
+    entry.chapter !== null
+      ? lessonCheckpoint(entry.chapter)
+      : createSimulation(
+          scenarioConfig(entry.experiment),
+          new URL(location.href).searchParams.has("experiment")
+            ? scenarioRequests(entry.experiment)
+            : [],
+        ),
   );
-  const [selected, select] = useState("");
+  const [initial, setInitial] = useState<Simulation>(() =>
+    entry.chapter !== null
+      ? createSimulation(scenarioConfig("single"), scenarioRequests("single"))
+      : structuredClone(s),
+  );
+  const [selected, select] = useState(s.requests[0]?.id ?? "");
   const [playing, play] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [prompt, setPrompt] = useState("What is a world model?");
-  const [mode, setMode] = useState<Mode>("follow");
+  const [mode, setMode] = useState<Mode>(
+    entry.chapter !== null || entry.experiment === "single"
+      ? "follow"
+      : entry.experiment === "kv"
+        ? "memory"
+        : "load",
+  );
   const [resourceView, setResourceView] = useState(false);
-  const [draft, setDraft] = useState(() => newDraft("single"));
-  const [chapter, setChapter] = useState(0);
-  const [guided, setGuided] = useState(false);
+  const [activeExperiment, setActiveExperiment] = useState<ScenarioId>(
+    entry.chapter !== null ? "single" : entry.experiment,
+  );
+  const [draft, setDraft] = useState(() =>
+    newDraft(entry.chapter !== null ? "single" : entry.experiment),
+  );
+  const [chapter, setChapter] = useState(entry.chapter ?? 0);
+  const [guided, setGuided] = useState(entry.chapter !== null);
   const [exportData, setExportData] = useState<string | null>(null);
   const reset = useCallback(() => {
     play(false);
@@ -141,6 +171,7 @@ export default function App() {
     select(next.requests[0]?.id ?? "");
     play(autoplay);
     setDraft(d);
+    setActiveExperiment(d.scenarioId);
     setGuided(false);
   }
   function preset(id: ScenarioId) {
@@ -197,6 +228,7 @@ export default function App() {
       createSimulation(scenarioConfig("single"), scenarioRequests("single")),
     );
     setDraft(newDraft("single"));
+    setActiveExperiment("single");
     select(next.requests[0]?.id ?? "");
   }
   function exportEvents() {
@@ -375,6 +407,13 @@ export default function App() {
             </button>
           </div>
         </div>
+        {learningContext && (
+          <LearningContextNotice
+            source="GEX"
+            explanation={contextExplanation}
+            locale={locale}
+          />
+        )}
         <div className="lab-layout" id="laboratory" tabIndex={-1}>
           <div className="world-column">
             <ServingWorld
@@ -385,8 +424,10 @@ export default function App() {
               locale={locale}
               resourceView={resourceView}
               highlight={guided ? lessons[chapter].focus : undefined}
+              sourceExperiment={activeExperiment}
             />
             <Playback
+              locale={locale}
               t={t}
               playing={playing}
               disabled={!s.requests.length || finished(s)}
@@ -465,6 +506,25 @@ export default function App() {
           onCheckpoint={checkpoint}
           t={t}
           locale={locale}
+        />
+        <LabShell
+          manifest={manifest}
+          experiment={experiments.find((x) => x.id === activeExperiment)!}
+          locale={locale}
+          relatedLabs={manifest.related.labs!.map((link) =>
+            link.id === "gex"
+              ? {
+                  ...link,
+                  url: gpuHandoff(
+                    chapter === 6 ? "decode" : "prefill",
+                    locale,
+                    activeExperiment,
+                    s.requests[0]?.promptTokens,
+                    s.requests.length,
+                  ),
+                }
+              : link,
+          )}
         />
         <ContextPanel t={t} locale={locale} />
         <footer>

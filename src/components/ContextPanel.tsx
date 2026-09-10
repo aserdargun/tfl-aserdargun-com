@@ -30,51 +30,28 @@ export function ContextPanel({ t, locale }: { t: T; locale: Locale }) {
           )}
         </p>
       </details>
-      <details>
-        <summary>
-          {t("Model assumptions & evidence", "Model varsayımları ve kaynaklar")}
-        </summary>
-        <p>
+      <div className="source-links">
+        <a
+          href="https://huggingface.co/docs/transformers/cache_explanation"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Hugging Face · Caching <ExternalLink />
+        </a>
+        <a
+          href="https://docs.vllm.ai/en/v0.22.1/usage/metrics/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          vLLM · Metrics definitions <ExternalLink />
+        </a>
+        <span>
           {t(
-            "MODEL INFERENCE ≠ MODEL SERVING. TFL models shared scheduling, prompt processing, autoregressive generation and finite memory. It runs no neural network and no real GPU workload. Token text is scripted. No real engine behavior is claimed.",
-            "MODEL ÇIKARIMI ≠ MODEL SUNUMU. TFL ortak zamanlamayı, istem işlemeyi, otoregresif üretimi ve sonlu belleği modeller. Sinir ağı veya gerçek GPU işi çalıştırmaz. Token metni önceden hazırlanmıştır. Gerçek bir motorun davranışı olduğu iddia edilmez.",
+            "SIMULATED: event times and model state. CALCULATED: metrics derived from those events. MEASURED: no dataset connected. Follow primary documentation for architecture-specific claims.",
+            "SİMÜLE: olay zamanları ve model durumu. HESAPLANMIŞ: bu olaylardan türetilen ölçütler. ÖLÇÜLMÜŞ: bağlı veri kümesi yok. Mimariye özgü iddialar için birincil belgeleri izle.",
           )}
-        </p>
-        <p>
-          {t(
-            "Each tick is 20 synthetic ms. One work budget is shared: up to 256 prefill tokens or 4 short-context decode steps per tick, with decode cost increasing as 1 + context / 2048. Max batch tokens adds a second work limit. Both sampler and delivery take one tick. Playback stretches time 10× at 1× speed so you can inspect events.",
-            "Her adım 20 sentetik ms’dir. Ortak iş bütçesi adım başına 256 ön doldurma tokenı veya 4 kısa bağlam çözümleme adımıdır; çözümleme maliyeti 1 + bağlam / 2048 ile artar. Azami grup tokenı ikinci iş sınırını belirler. Örnekleyici ve iletim birer adım sürer. Olayları inceleyebilmen için 1× oynatmada zaman 10 kat yavaşlatılır.",
-          )}
-        </p>
-        <p>
-          {t(
-            "Prefill and decode bottlenecks depend on model, hardware, batch, context and implementation. Quantization can reduce weight memory; speed and quality effects are method and hardware dependent. No universal performance claims are encoded here.",
-            "Ön doldurma ve çözümleme darboğazları modele, donanıma, gruba, bağlama ve uygulamaya bağlıdır. Nicemleme ağırlık belleğini azaltabilir; hız ve kalite etkisi yönteme ve donanıma bağlıdır. Burada evrensel performans iddiası yoktur.",
-          )}
-        </p>
-        <div className="source-links">
-          <a
-            href="https://huggingface.co/docs/transformers/cache_explanation"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Hugging Face · Caching <ExternalLink />
-          </a>
-          <a
-            href="https://docs.vllm.ai/en/v0.22.1/usage/metrics/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            vLLM · Metrics definitions <ExternalLink />
-          </a>
-          <span>
-            {t(
-              "SIMULATED: every number here. MEASURED: no dataset connected. ARCHITECTURE-SPECIFIC: follow primary documentation.",
-              "SİMÜLE: buradaki tüm sayılar. ÖLÇÜLMÜŞ: bağlı veri kümesi yok. MİMARİYE ÖZGÜ: birincil belgeleri izle.",
-            )}
-          </span>
-        </div>
-      </details>
+        </span>
+      </div>
       <div className="related-links">
         {relatedConcepts.map((c) => (
           <a

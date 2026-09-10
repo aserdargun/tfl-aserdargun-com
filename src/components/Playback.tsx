@@ -1,6 +1,9 @@
+import { LabControlButton } from "@aserdargun/lab-ui";
+import { manifest } from "../ils/catalog";
 import { Play, Pause, StepForward, RotateCcw } from "lucide-react";
 import type { T } from "./i18n";
 export function Playback({
+  locale,
   playing,
   disabled,
   time,
@@ -11,6 +14,7 @@ export function Playback({
   onSpeed,
   t,
 }: {
+  locale: "en" | "tr";
   playing: boolean;
   disabled: boolean;
   time: number;
@@ -26,18 +30,36 @@ export function Playback({
       <span className="control-title">
         {t("Simulation control", "Simülasyon kontrolü")}
       </span>
-      <button className="primary" onClick={onPlay} disabled={disabled}>
+      <LabControlButton
+        action={playing ? "pause" : "play"}
+        capabilities={manifest.capabilities}
+        locale={locale}
+        className="primary"
+        onClick={onPlay}
+        disabled={disabled}
+      >
         {playing ? <Pause /> : <Play />}
         {playing ? t("Pause", "Duraklat") : t("Play", "Oynat")}
-      </button>
-      <button onClick={onStep} disabled={disabled}>
+      </LabControlButton>
+      <LabControlButton
+        action="step"
+        capabilities={manifest.capabilities}
+        locale={locale}
+        onClick={onStep}
+        disabled={disabled}
+      >
         <StepForward />
         {t("Step", "Adım")}
-      </button>
-      <button onClick={onReset}>
+      </LabControlButton>
+      <LabControlButton
+        action="reset"
+        capabilities={manifest.capabilities}
+        locale={locale}
+        onClick={onReset}
+      >
         <RotateCcw />
         {t("Reset", "Sıfırla")}
-      </button>
+      </LabControlButton>
       <label className="speed">
         {t("Speed", "Hız")}
         <select

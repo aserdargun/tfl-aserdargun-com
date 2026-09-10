@@ -13,7 +13,7 @@ import {
   type T,
   type Locale,
 } from "../components/i18n";
-import { gexLink } from "../integrations/links";
+import { gpuHandoff } from "../ils/context";
 const colors = [
   "#79deba",
   "#dfb45e",
@@ -55,6 +55,7 @@ export function ServingWorld({
   locale,
   resourceView,
   highlight,
+  sourceExperiment,
 }: {
   s: Simulation;
   selected: string;
@@ -63,6 +64,7 @@ export function ServingWorld({
   locale: Locale;
   resourceView: boolean;
   highlight?: string;
+  sourceExperiment: string;
 }) {
   const waiting = s.requests.filter((r) => r.state === "waiting");
   const live = s.requests.filter(active);
@@ -329,11 +331,20 @@ export function ServingWorld({
           </div>
           <a
             className="compute-link"
-            href={gexLink(state === "prefill" ? "tensor" : "memory", locale)}
+            href={gpuHandoff(
+              state === "prefill" ||
+                (highlight === "engine" && (r?.generated ?? 0) === 0)
+                ? "prefill"
+                : "decode",
+              locale,
+              sourceExperiment,
+              tokens,
+              s.requests.length,
+            )}
             target="_blank"
             rel="noreferrer"
           >
-            {t("Dive into GPU execution", "GPU yürütmesini keşfet")}
+            {t("Explore GPU execution", "GPU yürütmesini keşfet")}
             <ExternalLink />
           </a>
         </div>

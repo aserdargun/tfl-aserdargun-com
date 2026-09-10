@@ -1,4 +1,7 @@
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { localize } from "@aserdargun/lab-core";
+import { guidedLesson } from "../ils/catalog";
+import { gpuHandoff } from "../ils/context";
 import { lessons } from "../lessons/lessons";
 import { tokenize } from "../core/simulation";
 import type { Simulation } from "../core/types";
@@ -20,12 +23,13 @@ export function LessonPanel({
   locale: Locale;
 }) {
   const lesson = lessons[index];
+  const definition = guidedLesson.steps[index];
   const r = s.requests[0];
   return (
     <section className="lesson-panel">
       <div className="lesson-top">
         <h2>
-          Token Flow 101{" "}
+          {localize(guidedLesson.title, locale)}{" "}
           <span>
             {t(
               "Learn the system, one step at a time.",
@@ -58,8 +62,8 @@ export function LessonPanel({
           {String(index + 1).padStart(2, "0")}
         </span>
         <div>
-          <h3>{t(...lesson.title)}</h3>
-          <p>{t(...lesson.body)}</p>
+          <h3>{localize(definition.title, locale)}</h3>
+          <p>{localize(definition.explanation, locale)}</p>
           {index === 1 && (
             <div className="tokenization">
               {tokenize(r?.prompt ?? "What is a world model?")
@@ -80,6 +84,22 @@ export function LessonPanel({
           )}
         </div>
         <div className="lesson-actions">
+          {(index === 4 || index === 6) && (
+            <a
+              href={gpuHandoff(
+                index === 4 ? "prefill" : "decode",
+                locale,
+                "single",
+                r?.promptTokens,
+                s.requests.length,
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("Explore GPU execution", "GPU yürütmesini keşfet")}{" "}
+              <ExternalLink />
+            </a>
+          )}
           <button onClick={onCheckpoint} className="primary">
             {t("Show this moment", "Bu anı göster")}
             <ArrowRight />

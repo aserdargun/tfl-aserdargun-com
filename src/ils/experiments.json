@@ -1,0 +1,762 @@
+[
+  {
+    "schemaVersion": "0.1",
+    "id": "single",
+    "title": {
+      "en": "One request",
+      "tr": "Tek istek"
+    },
+    "guidingQuestion": {
+      "en": "What happens between a request’s arrival and each delivered token?",
+      "tr": "Bir isteğin gelişi ile iletilen her token arasında neler olur?"
+    },
+    "description": {
+      "en": "Follow the full lifetime of one prompt.",
+      "tr": "Bir istemin tüm yaşam döngüsünü izle."
+    },
+    "concepts": ["concept:prefill", "concept:decode", "concept:ttft"],
+    "learningObjectives": [
+      {
+        "en": "Follow the full lifetime of one prompt.",
+        "tr": "Bir istemin tüm yaşam döngüsünü izle."
+      }
+    ],
+    "controls": [
+      {
+        "id": "scenario",
+        "label": {
+          "en": "Scenario parameters",
+          "tr": "Senaryo parametreleri"
+        },
+        "description": {
+          "en": "Run scenario applies draft workload and scheduler controls.",
+          "tr": "Senaryoyu çalıştır, taslak iş yükü ve zamanlayıcı ayarlarını uygular."
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "request-lifetime",
+        "label": {
+          "en": "Request lifetime",
+          "tr": "İstek yaşam döngüsü"
+        },
+        "explanation": {
+          "en": "Inspect the event timeline, queue and delivered tokens.",
+          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+        },
+        "evidenceRefs": ["simulated-events", "ttft"]
+      }
+    ],
+    "assumptionRefs": [
+      "educational-serving",
+      "educational-scheduler",
+      "synthetic-work-budget",
+      "performance-scope"
+    ],
+    "evidenceRefs": ["simulated-events", "ttft"],
+    "relatedTheory": [
+      {
+        "id": "llm",
+        "label": {
+          "en": "Learn the theory · LLM Atlas",
+          "tr": "Kuramı öğren · LLM Atlas"
+        },
+        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "localizedUrls": {
+          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+        }
+      }
+    ],
+    "relatedLabs": [
+      {
+        "id": "gex",
+        "label": {
+          "en": "Explore GPU execution",
+          "tr": "GPU yürütmesini keşfet"
+        },
+        "url": "https://gex.aserdargun.com/gex/tensor"
+      }
+    ],
+    "config": {
+      "scenarioId": "single"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "burst",
+    "title": {
+      "en": "Load Storm",
+      "tr": "Yük Fırtınası"
+    },
+    "guidingQuestion": {
+      "en": "How does a burst of requests compete for active slots?",
+      "tr": "Bir istek dalgası etkin yerler için nasıl yarışır?"
+    },
+    "description": {
+      "en": "A burst of users competes for four active slots.",
+      "tr": "Bir kullanıcı dalgası dört etkin yer için yarışır."
+    },
+    "concepts": ["concept:concurrency", "concept:scheduling"],
+    "learningObjectives": [
+      {
+        "en": "A burst of users competes for four active slots.",
+        "tr": "Bir kullanıcı dalgası dört etkin yer için yarışır."
+      }
+    ],
+    "controls": [
+      {
+        "id": "scenario",
+        "label": {
+          "en": "Scenario parameters",
+          "tr": "Senaryo parametreleri"
+        },
+        "description": {
+          "en": "Run scenario applies draft workload and scheduler controls.",
+          "tr": "Senaryoyu çalıştır, taslak iş yükü ve zamanlayıcı ayarlarını uygular."
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "request-lifetime",
+        "label": {
+          "en": "Request lifetime",
+          "tr": "İstek yaşam döngüsü"
+        },
+        "explanation": {
+          "en": "Inspect the event timeline, queue and delivered tokens.",
+          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+        },
+        "evidenceRefs": ["simulated-events", "ttft"]
+      }
+    ],
+    "assumptionRefs": [
+      "educational-serving",
+      "educational-scheduler",
+      "synthetic-work-budget",
+      "performance-scope"
+    ],
+    "evidenceRefs": ["simulated-events", "ttft"],
+    "relatedTheory": [
+      {
+        "id": "llm",
+        "label": {
+          "en": "Learn the theory · LLM Atlas",
+          "tr": "Kuramı öğren · LLM Atlas"
+        },
+        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "localizedUrls": {
+          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+        }
+      }
+    ],
+    "relatedLabs": [
+      {
+        "id": "gex",
+        "label": {
+          "en": "Explore GPU execution",
+          "tr": "GPU yürütmesini keşfet"
+        },
+        "url": "https://gex.aserdargun.com/gex/tensor"
+      }
+    ],
+    "config": {
+      "scenarioId": "burst"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "steady",
+    "title": {
+      "en": "Steady arrivals",
+      "tr": "Düzenli geliş"
+    },
+    "guidingQuestion": {
+      "en": "How do steady arrivals change waiting and delivery?",
+      "tr": "Düzenli gelişler beklemeyi ve iletimi nasıl değiştirir?"
+    },
+    "description": {
+      "en": "A request arrives every 200 simulated milliseconds.",
+      "tr": "Her 200 simülasyon milisaniyesinde bir istek gelir."
+    },
+    "concepts": ["concept:concurrency", "concept:ttft"],
+    "learningObjectives": [
+      {
+        "en": "A request arrives every 200 simulated milliseconds.",
+        "tr": "Her 200 simülasyon milisaniyesinde bir istek gelir."
+      }
+    ],
+    "controls": [
+      {
+        "id": "scenario",
+        "label": {
+          "en": "Scenario parameters",
+          "tr": "Senaryo parametreleri"
+        },
+        "description": {
+          "en": "Run scenario applies draft workload and scheduler controls.",
+          "tr": "Senaryoyu çalıştır, taslak iş yükü ve zamanlayıcı ayarlarını uygular."
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "request-lifetime",
+        "label": {
+          "en": "Request lifetime",
+          "tr": "İstek yaşam döngüsü"
+        },
+        "explanation": {
+          "en": "Inspect the event timeline, queue and delivered tokens.",
+          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+        },
+        "evidenceRefs": ["simulated-events", "ttft"]
+      }
+    ],
+    "assumptionRefs": [
+      "educational-serving",
+      "educational-scheduler",
+      "synthetic-work-budget",
+      "performance-scope"
+    ],
+    "evidenceRefs": ["simulated-events", "ttft"],
+    "relatedTheory": [
+      {
+        "id": "llm",
+        "label": {
+          "en": "Learn the theory · LLM Atlas",
+          "tr": "Kuramı öğren · LLM Atlas"
+        },
+        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "localizedUrls": {
+          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+        }
+      }
+    ],
+    "relatedLabs": [
+      {
+        "id": "gex",
+        "label": {
+          "en": "Explore GPU execution",
+          "tr": "GPU yürütmesini keşfet"
+        },
+        "url": "https://gex.aserdargun.com/gex/tensor"
+      }
+    ],
+    "config": {
+      "scenarioId": "steady"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "long",
+    "title": {
+      "en": "32K context",
+      "tr": "32K bağlam"
+    },
+    "guidingQuestion": {
+      "en": "How does one long prompt affect the requests behind it?",
+      "tr": "Uzun bir istem arkasındaki istekleri nasıl etkiler?"
+    },
+    "description": {
+      "en": "One long document arrives before seven short questions.",
+      "tr": "Uzun bir belge yedi kısa sorudan önce gelir."
+    },
+    "concepts": [
+      "concept:context-window",
+      "concept:prefill",
+      "concept:kv-cache"
+    ],
+    "learningObjectives": [
+      {
+        "en": "One long document arrives before seven short questions.",
+        "tr": "Uzun bir belge yedi kısa sorudan önce gelir."
+      }
+    ],
+    "controls": [
+      {
+        "id": "scenario",
+        "label": {
+          "en": "Scenario parameters",
+          "tr": "Senaryo parametreleri"
+        },
+        "description": {
+          "en": "Run scenario applies draft workload and scheduler controls.",
+          "tr": "Senaryoyu çalıştır, taslak iş yükü ve zamanlayıcı ayarlarını uygular."
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "request-lifetime",
+        "label": {
+          "en": "Request lifetime",
+          "tr": "İstek yaşam döngüsü"
+        },
+        "explanation": {
+          "en": "Inspect the event timeline, queue and delivered tokens.",
+          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+        },
+        "evidenceRefs": ["simulated-events", "ttft"]
+      }
+    ],
+    "assumptionRefs": [
+      "educational-serving",
+      "educational-scheduler",
+      "synthetic-work-budget",
+      "performance-scope"
+    ],
+    "evidenceRefs": ["simulated-events", "ttft"],
+    "relatedTheory": [
+      {
+        "id": "llm",
+        "label": {
+          "en": "Learn the theory · LLM Atlas",
+          "tr": "Kuramı öğren · LLM Atlas"
+        },
+        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "localizedUrls": {
+          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+        }
+      }
+    ],
+    "relatedLabs": [
+      {
+        "id": "gex",
+        "label": {
+          "en": "Explore GPU execution",
+          "tr": "GPU yürütmesini keşfet"
+        },
+        "url": "https://gex.aserdargun.com/gex/tensor"
+      }
+    ],
+    "config": {
+      "scenarioId": "long"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "code",
+    "title": {
+      "en": "Code generation",
+      "tr": "Kod üretimi"
+    },
+    "guidingQuestion": {
+      "en": "How does longer output keep requests and KV state alive?",
+      "tr": "Uzun çıktı istekleri ve KV durumunu nasıl daha uzun süre tutar?"
+    },
+    "description": {
+      "en": "Longer output keeps requests and KV state alive.",
+      "tr": "Uzun çıktı istekleri ve KV durumunu daha uzun tutar."
+    },
+    "concepts": ["concept:decode", "concept:kv-cache"],
+    "learningObjectives": [
+      {
+        "en": "Longer output keeps requests and KV state alive.",
+        "tr": "Uzun çıktı istekleri ve KV durumunu daha uzun tutar."
+      }
+    ],
+    "controls": [
+      {
+        "id": "scenario",
+        "label": {
+          "en": "Scenario parameters",
+          "tr": "Senaryo parametreleri"
+        },
+        "description": {
+          "en": "Run scenario applies draft workload and scheduler controls.",
+          "tr": "Senaryoyu çalıştır, taslak iş yükü ve zamanlayıcı ayarlarını uygular."
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "request-lifetime",
+        "label": {
+          "en": "Request lifetime",
+          "tr": "İstek yaşam döngüsü"
+        },
+        "explanation": {
+          "en": "Inspect the event timeline, queue and delivered tokens.",
+          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+        },
+        "evidenceRefs": ["simulated-events", "ttft"]
+      }
+    ],
+    "assumptionRefs": [
+      "educational-serving",
+      "educational-scheduler",
+      "synthetic-work-budget",
+      "performance-scope"
+    ],
+    "evidenceRefs": ["simulated-events", "ttft"],
+    "relatedTheory": [
+      {
+        "id": "llm",
+        "label": {
+          "en": "Learn the theory · LLM Atlas",
+          "tr": "Kuramı öğren · LLM Atlas"
+        },
+        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "localizedUrls": {
+          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+        }
+      }
+    ],
+    "relatedLabs": [
+      {
+        "id": "gex",
+        "label": {
+          "en": "Explore GPU execution",
+          "tr": "GPU yürütmesini keşfet"
+        },
+        "url": "https://gex.aserdargun.com/gex/tensor"
+      }
+    ],
+    "config": {
+      "scenarioId": "code"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "short",
+    "title": {
+      "en": "Many short users",
+      "tr": "Çok sayıda kısa istek"
+    },
+    "guidingQuestion": {
+      "en": "How do short requests with different lifetimes share slots?",
+      "tr": "Farklı yaşam sürelerine sahip kısa istekler yerleri nasıl paylaşır?"
+    },
+    "description": {
+      "en": "Short prompts with different completion times.",
+      "tr": "Farklı bitiş sürelerine sahip kısa istemler."
+    },
+    "concepts": ["concept:concurrency", "concept:scheduling"],
+    "learningObjectives": [
+      {
+        "en": "Short prompts with different completion times.",
+        "tr": "Farklı bitiş sürelerine sahip kısa istemler."
+      }
+    ],
+    "controls": [
+      {
+        "id": "scenario",
+        "label": {
+          "en": "Scenario parameters",
+          "tr": "Senaryo parametreleri"
+        },
+        "description": {
+          "en": "Run scenario applies draft workload and scheduler controls.",
+          "tr": "Senaryoyu çalıştır, taslak iş yükü ve zamanlayıcı ayarlarını uygular."
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "request-lifetime",
+        "label": {
+          "en": "Request lifetime",
+          "tr": "İstek yaşam döngüsü"
+        },
+        "explanation": {
+          "en": "Inspect the event timeline, queue and delivered tokens.",
+          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+        },
+        "evidenceRefs": ["simulated-events", "ttft"]
+      }
+    ],
+    "assumptionRefs": [
+      "educational-serving",
+      "educational-scheduler",
+      "synthetic-work-budget",
+      "performance-scope"
+    ],
+    "evidenceRefs": ["simulated-events", "ttft"],
+    "relatedTheory": [
+      {
+        "id": "llm",
+        "label": {
+          "en": "Learn the theory · LLM Atlas",
+          "tr": "Kuramı öğren · LLM Atlas"
+        },
+        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "localizedUrls": {
+          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+        }
+      }
+    ],
+    "relatedLabs": [
+      {
+        "id": "gex",
+        "label": {
+          "en": "Explore GPU execution",
+          "tr": "GPU yürütmesini keşfet"
+        },
+        "url": "https://gex.aserdargun.com/gex/tensor"
+      }
+    ],
+    "config": {
+      "scenarioId": "short"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "kv",
+    "title": {
+      "en": "KV Wall",
+      "tr": "KV Duvarı"
+    },
+    "guidingQuestion": {
+      "en": "Why can reserved KV capacity keep a request in the queue?",
+      "tr": "Ayrılan KV kapasitesi bir isteği neden kuyrukta tutabilir?"
+    },
+    "description": {
+      "en": "Memory reservations hold new requests in the queue.",
+      "tr": "Bellek rezervasyonları yeni istekleri kuyrukta tutar."
+    },
+    "concepts": ["concept:kv-cache", "concept:gpu-memory"],
+    "learningObjectives": [
+      {
+        "en": "Memory reservations hold new requests in the queue.",
+        "tr": "Bellek rezervasyonları yeni istekleri kuyrukta tutar."
+      }
+    ],
+    "controls": [
+      {
+        "id": "scenario",
+        "label": {
+          "en": "Scenario parameters",
+          "tr": "Senaryo parametreleri"
+        },
+        "description": {
+          "en": "Run scenario applies draft workload and scheduler controls.",
+          "tr": "Senaryoyu çalıştır, taslak iş yükü ve zamanlayıcı ayarlarını uygular."
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "request-lifetime",
+        "label": {
+          "en": "Request lifetime",
+          "tr": "İstek yaşam döngüsü"
+        },
+        "explanation": {
+          "en": "Inspect the event timeline, queue and delivered tokens.",
+          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+        },
+        "evidenceRefs": ["simulated-events", "ttft"]
+      }
+    ],
+    "assumptionRefs": [
+      "educational-serving",
+      "educational-scheduler",
+      "synthetic-work-budget",
+      "performance-scope"
+    ],
+    "evidenceRefs": ["simulated-events", "ttft"],
+    "relatedTheory": [
+      {
+        "id": "llm",
+        "label": {
+          "en": "Learn the theory · LLM Atlas",
+          "tr": "Kuramı öğren · LLM Atlas"
+        },
+        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "localizedUrls": {
+          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+        }
+      }
+    ],
+    "relatedLabs": [
+      {
+        "id": "gex",
+        "label": {
+          "en": "Explore GPU execution",
+          "tr": "GPU yürütmesini keşfet"
+        },
+        "url": "https://gex.aserdargun.com/gex/tensor"
+      }
+    ],
+    "config": {
+      "scenarioId": "kv"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "overload",
+    "title": {
+      "en": "Overload",
+      "tr": "Aşırı yük"
+    },
+    "guidingQuestion": {
+      "en": "What happens when arrivals exceed the waiting queue limit?",
+      "tr": "Gelişler bekleme kuyruğu sınırını aştığında ne olur?"
+    },
+    "description": {
+      "en": "64 arrivals exceed a waiting queue of 24.",
+      "tr": "64 istek, 24 kişilik bekleme kuyruğunu aşar."
+    },
+    "concepts": ["concept:concurrency", "concept:scheduling"],
+    "learningObjectives": [
+      {
+        "en": "64 arrivals exceed a waiting queue of 24.",
+        "tr": "64 istek, 24 kişilik bekleme kuyruğunu aşar."
+      }
+    ],
+    "controls": [
+      {
+        "id": "scenario",
+        "label": {
+          "en": "Scenario parameters",
+          "tr": "Senaryo parametreleri"
+        },
+        "description": {
+          "en": "Run scenario applies draft workload and scheduler controls.",
+          "tr": "Senaryoyu çalıştır, taslak iş yükü ve zamanlayıcı ayarlarını uygular."
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "request-lifetime",
+        "label": {
+          "en": "Request lifetime",
+          "tr": "İstek yaşam döngüsü"
+        },
+        "explanation": {
+          "en": "Inspect the event timeline, queue and delivered tokens.",
+          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+        },
+        "evidenceRefs": ["simulated-events", "ttft"]
+      }
+    ],
+    "assumptionRefs": [
+      "educational-serving",
+      "educational-scheduler",
+      "synthetic-work-budget",
+      "performance-scope"
+    ],
+    "evidenceRefs": ["simulated-events", "ttft"],
+    "relatedTheory": [
+      {
+        "id": "llm",
+        "label": {
+          "en": "Learn the theory · LLM Atlas",
+          "tr": "Kuramı öğren · LLM Atlas"
+        },
+        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "localizedUrls": {
+          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+        }
+      }
+    ],
+    "relatedLabs": [
+      {
+        "id": "gex",
+        "label": {
+          "en": "Explore GPU execution",
+          "tr": "GPU yürütmesini keşfet"
+        },
+        "url": "https://gex.aserdargun.com/gex/tensor"
+      }
+    ],
+    "config": {
+      "scenarioId": "overload"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "batching",
+    "title": {
+      "en": "Batching trade-off",
+      "tr": "Gruplama dengesi"
+    },
+    "guidingQuestion": {
+      "en": "How do static and continuous admission change the same workload?",
+      "tr": "Sabit ve sürekli kabul aynı iş yükünü nasıl değiştirir?"
+    },
+    "description": {
+      "en": "Compare identical work with static and dynamic admission.",
+      "tr": "Aynı işi sabit ve dinamik kabul ile karşılaştır."
+    },
+    "concepts": ["concept:scheduling", "concept:ttft"],
+    "learningObjectives": [
+      {
+        "en": "Compare identical work with static and dynamic admission.",
+        "tr": "Aynı işi sabit ve dinamik kabul ile karşılaştır."
+      }
+    ],
+    "controls": [
+      {
+        "id": "scenario",
+        "label": {
+          "en": "Scenario parameters",
+          "tr": "Senaryo parametreleri"
+        },
+        "description": {
+          "en": "Run scenario applies draft workload and scheduler controls.",
+          "tr": "Senaryoyu çalıştır, taslak iş yükü ve zamanlayıcı ayarlarını uygular."
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": "request-lifetime",
+        "label": {
+          "en": "Request lifetime",
+          "tr": "İstek yaşam döngüsü"
+        },
+        "explanation": {
+          "en": "Inspect the event timeline, queue and delivered tokens.",
+          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+        },
+        "evidenceRefs": ["simulated-events", "ttft"]
+      }
+    ],
+    "assumptionRefs": [
+      "educational-serving",
+      "educational-scheduler",
+      "synthetic-work-budget",
+      "performance-scope"
+    ],
+    "evidenceRefs": ["simulated-events", "ttft"],
+    "relatedTheory": [
+      {
+        "id": "llm",
+        "label": {
+          "en": "Learn the theory · LLM Atlas",
+          "tr": "Kuramı öğren · LLM Atlas"
+        },
+        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "localizedUrls": {
+          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+        }
+      }
+    ],
+    "relatedLabs": [
+      {
+        "id": "gex",
+        "label": {
+          "en": "Explore GPU execution",
+          "tr": "GPU yürütmesini keşfet"
+        },
+        "url": "https://gex.aserdargun.com/gex/tensor"
+      }
+    ],
+    "config": {
+      "scenarioId": "batching"
+    }
+  }
+]

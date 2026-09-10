@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5299 --strictPort",
-    "build": "tsc -b && vite build && node scripts/release.mjs && node scripts/release.mjs --verify",
+    "build": "tsc -b && vite build && node scripts/ils-manifest.mjs && node scripts/release.mjs && node scripts/release.mjs --verify",
     "preview": "vite preview --host 127.0.0.1 --port 4299 --strictPort",
     "test": "vitest run",
     "lint": "tsc --noEmit",
@@ -20,7 +20,9 @@
     "@fontsource/ibm-plex-mono": "5.3.0",
     "lucide-react": "0.468.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "@aserdargun/lab-core": "file:vendor/aserdargun-lab-core-0.1.0-e5cb8baabeebc68c.tgz",
+    "@aserdargun/lab-ui": "file:vendor/aserdargun-lab-ui-0.1.0-ad3719af737d3971.tgz"
   },
   "devDependencies": {
     "@types/node": "22.20.1",

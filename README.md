@@ -53,3 +53,13 @@ See [deployment contract](docs/deployment.md), [model specification](docs/simula
 - `tests/`: lifecycle, timing, capacity, reproducibility, scheduler and lesson invariants.
 
 No speculative decoding, prefix caching, distributed serving or fake benchmark/trace mode is included. These are extension points after the core.
+
+## ILS v0.1 pilot
+
+`lab.manifest.json` describes the actual lab, capabilities, concepts, evidence and assumptions. `src/ils/experiments.json` maps existing experiments; `src/ils/catalog.ts` adapts the existing guided lesson without copying its curriculum. Shared provenance, related learning, context notices and accessible transport buttons come from the canonical `@aserdargun/lab-core` and `@aserdargun/lab-ui` packages maintained in `ils-aserdargun`.
+
+Both packages are consumed through committed, content-addressed `vendor/*.tgz` archives and npm lockfile integrity, with provenance in `vendor/ils-provenance.json`. CI needs no sibling checkout, symlink or registry credentials. Update them only by building/packing canonical ILS and running its pilot installer, then run this repository's normal validation. Never edit installed package files. Ahead-of-time JSON Schema validators work without runtime code generation.
+
+The root UI also accepts allowlisted `?experiment=<preset>` and `?lesson=token-flow-101&chapter=0..9` entries. Compute and guided-lesson links hand prefill to GEX tensor or decode to GEX memory, preserving locale. Return context opens a paused lesson replay, not original request state. Only workload and coarse batch/sequence classes travel; prompts and runtime traces do not. The serving simulator, scheduler and metric calculations stay app-owned. `/lab.manifest.json` is emitted before the existing release hash inventory.
+
+Manifest status `live` identifies the GEX/TFL production release; deployment must still be verified against its source commit. Canonical ILS documents include the migration guide, compatibility checklist, protocol, architecture review and cross-lab browser acceptance test.
