@@ -119,6 +119,7 @@ export function addRequests(s: Simulation, specs: RequestSpec[]): Simulation {
         ...r,
         state: "pending" as const,
         prefilled: 0,
+        prefillWork: 0,
         generated: 0,
         kvTokens: 0,
         reservedTokens: 0,
@@ -200,16 +201,28 @@ export function waitingReason(s: Simulation, r: ServingRequest): Reason {
   return "opportunity";
 }
 export function step(previous: Simulation): Simulation {
-  const s = structuredClone(previous);
-  if (finished(s)) return s;
+  if (!previous.requests.length || finished(previous)) return previous;
+  // Existing events and configuration are read-only. Copy only containers and
+  // request fields that this tick can mutate, not the entire accumulated trace.
+  const s: Simulation = {
+    ...previous,
+    events: [...previous.events],
+    batch: [...previous.batch],
+    requests: previous.requests.map((r) => ({
+      ...r,
+      tokenTimes: [...r.tokenTimes],
+      tokens: [...r.tokens],
+    })),
+  };
   s.time = s.tick * TICK_MS;
   s.tick++;
   s.compute = 0;
   s.processedTokens = 0;
   const justArrived = new Set<string>();
-  for (const r of s.requests
+  const arrivals = s.requests
     .filter((r) => r.state === "pending" && r.arrival <= s.time)
-    .sort((a, b) => a.arrival - b.arrival)) {
+    .sort((a, b) => a.arrival - b.arrival);
+  for (const r of arrivals) {
     // Preserve exact client arrival timestamp even when arrival is between ticks.
     s.events.push({
       id: s.events.length,
@@ -217,6 +230,8 @@ export function step(previous: Simulation): Simulation {
       requestId: r.id,
       type: "REQUEST_ARRIVED",
     });
+  }
+  for (const r of arrivals) {
     r.state = "waiting";
     r.phaseAt = s.time;
     justArrived.add(r.id);
@@ -247,9 +262,9 @@ export function step(previous: Simulation): Simulation {
     s.batch = [];
   const staticLocked =
     schedulers[s.config.policy].holdCohort && s.batch.length > 0;
-  for (const r of s.requests.filter(
-    (r) => r.state === "waiting" && !justArrived.has(r.id),
-  )) {
+  for (const r of s.requests
+    .filter((r) => r.state === "waiting" && !justArrived.has(r.id))
+    .sort((a, b) => a.arrival - b.arrival)) {
     r.reason = waitingReason(s, r);
     if (staticLocked) {
       r.reason = "cohort";
@@ -288,15 +303,15 @@ export function step(previous: Simulation): Simulation {
       const cost =
         s.config.model.prefillWorkFactor /
         s.config.hardware.prefillTokensPerTick;
-      const n = Math.min(
-        r.promptTokens - r.prefilled,
-        tokenBudget,
-        Math.floor((budget + 1e-9) / cost),
-      );
+      const remaining = Math.min(r.promptTokens - r.prefilled, tokenBudget);
+      const spent = Math.min(budget, remaining * cost - r.prefillWork);
+      r.prefillWork += spent;
+      budget -= spent;
+      const n = Math.min(remaining, Math.floor((r.prefillWork + 1e-9) / cost));
       if (n > 0) {
         r.prefilled += n;
         r.kvTokens += n;
-        budget -= n * cost;
+        r.prefillWork = Math.max(0, r.prefillWork - n * cost);
         tokenBudget -= n;
         s.processedTokens += n;
         event(s, r, "CACHE_ALLOCATED", n);
@@ -331,6 +346,7 @@ export function step(previous: Simulation): Simulation {
   return s;
 }
 export function runToEnd(s: Simulation, limit = 100000) {
+  if (!s.requests.length) return s;
   for (let i = 0; i < limit && !finished(s); i++) s = step(s);
   if (!finished(s))
     throw new Error("Simulation did not finish within tick budget");

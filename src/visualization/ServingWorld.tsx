@@ -141,10 +141,20 @@ export function ServingWorld({
                         `${pending.length} scheduled arrivals`,
                         `${pending.length} planlanmış geliş`,
                       )
-                    : t(
-                        "Send a prompt to begin.",
-                        "Başlamak için bir istem gönder.",
-                      )}
+                    : live.length
+                      ? t(
+                          "Active requests are being served.",
+                          "Etkin istekler işleniyor.",
+                        )
+                      : done.length
+                        ? t(
+                            "All arrivals have been handled.",
+                            "Gelen tüm istekler işlendi.",
+                          )
+                        : t(
+                            "Send a prompt to begin.",
+                            "Başlamak için bir istem gönder.",
+                          )}
                 </small>
               </div>
             )}
@@ -195,7 +205,9 @@ export function ServingWorld({
             ))}
           </div>
           <p className="chamber-foot">
-            {s.config.policy === "static" && s.batch.length > live.length
+            {s.config.policy === "static" &&
+            live.length > 0 &&
+            s.batch.length > live.length
               ? t(
                   `${s.batch.length - live.length} finished slot(s) held by cohort`,
                   `${s.batch.length - live.length} biten yer grup için tutuluyor`,
@@ -332,10 +344,7 @@ export function ServingWorld({
           <a
             className="compute-link"
             href={gpuHandoff(
-              state === "prefill" ||
-                (highlight === "engine" && (r?.generated ?? 0) === 0)
-                ? "prefill"
-                : "decode",
+              (r?.generated ?? 0) === 0 ? "prefill" : "decode",
               locale,
               sourceExperiment,
               tokens,
@@ -374,7 +383,7 @@ export function ServingWorld({
         </div>
         <div
           className="cache-bar"
-          role="img"
+          role="group"
           aria-label={t(
             `KV cache: ${used} of ${cap} token slots written, ${held} reserved`,
             `KV önbellek: ${cap} token yerinin ${used} adedi yazıldı, ${held} ayrıldı`,
@@ -423,7 +432,7 @@ export function ServingWorld({
             <progress
               max={r.reservedTokens || 1}
               value={r.kvTokens}
-              aria-label={`${r.id} KV progress`}
+              aria-label={t(`${r.id} KV progress`, `${r.id} KV ilerlemesi`)}
             />
             <span>
               {r.kvTokens} / {r.reservedTokens}
@@ -451,13 +460,23 @@ export function ServingWorld({
           <span>
             {t("System state", "Sistem durumu")}{" "}
             <b>
-              {s.requests.some((r) => r.reason === "queue")
-                ? t("Overload: queue rejections", "Aşırı yük: kuyruk reddi")
-                : waiting.some((r) => r.reason === "kv")
-                  ? t("Memory-limited", "Bellekle sınırlı")
-                  : waiting.length && live.length >= s.config.maxActive
-                    ? t("Active slots saturated", "Etkin yerler doygun")
-                    : t("Within admission capacity", "Kabul kapasitesi içinde")}
+              {s.requests.some((r) => r.reason === "model")
+                ? t("Fixed memory does not fit", "Sabit bellek sığmıyor")
+                : s.requests.some((r) => r.reason === "impossible")
+                  ? t(
+                      "Requests exceed KV capacity",
+                      "İstekler KV kapasitesini aşıyor",
+                    )
+                  : s.requests.some((r) => r.reason === "queue")
+                    ? t("Overload: queue rejections", "Aşırı yük: kuyruk reddi")
+                    : waiting.some((r) => r.reason === "kv")
+                      ? t("Memory-limited", "Bellekle sınırlı")
+                      : waiting.length && live.length >= s.config.maxActive
+                        ? t("Active slots saturated", "Etkin yerler doygun")
+                        : t(
+                            "Within admission capacity",
+                            "Kabul kapasitesi içinde",
+                          )}
             </b>
           </span>
           <span>
@@ -479,6 +498,24 @@ export function ServingWorld({
         <p className="decision" role="status">
           <b>{r.id}</b> {t(...reasonName[r.reason])}
         </p>
+      )}
+      {pending.length > 0 && (
+        <details className="history">
+          <summary>
+            {t("Scheduled requests", "Planlanmış istekler")} · {pending.length}
+          </summary>
+          <div className="history-list">
+            {pending.map((r) => (
+              <RequestChip
+                key={r.id}
+                r={r}
+                selected={selected}
+                onSelect={onSelect}
+                t={t}
+              />
+            ))}
+          </div>
+        </details>
       )}
       {done.length > 0 && (
         <details className="history">

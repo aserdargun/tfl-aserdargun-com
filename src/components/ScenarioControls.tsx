@@ -16,12 +16,14 @@ export function ScenarioControls({
   onPreset,
   onRun,
   t,
+  dirty,
 }: {
   draft: ExperimentDraft;
   onDraft: (d: ExperimentDraft) => void;
   onPreset: (id: ScenarioId) => void;
   onRun: () => void;
   t: T;
+  dirty: boolean;
 }) {
   const [expanded, setExpanded] = useState(
     () => !matchMedia("(max-width: 650px)").matches,
@@ -43,6 +45,7 @@ export function ScenarioControls({
     >
       <summary>
         {t("Experiment controls", "Deney kontrolleri")}
+        {dirty ? " •" : ""}
         <span>
           {t(
             "Changes apply when you run a new scenario.",
@@ -176,7 +179,13 @@ export function ScenarioControls({
           <select
             value={c.model.weightMiB}
             onChange={(e) =>
-              config({ model: { ...c.model, weightMiB: +e.target.value } })
+              config({
+                model: {
+                  ...c.model,
+                  name: `${+e.target.value / 1024} GiB / synthetic`,
+                  weightMiB: +e.target.value,
+                },
+              })
             }
           >
             <option value="2048">{t("Small", "Küçük")} · 2 GiB</option>

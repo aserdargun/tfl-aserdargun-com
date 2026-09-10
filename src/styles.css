@@ -3,6 +3,7 @@
   color: #e6edf0;
   background: #101719;
   font-synthesis: none;
+  --text: #e6edf0;
   --bg: #101719;
   --surface: #151e22;
   --line: #344247;
@@ -2270,5 +2271,64 @@ dialog > small {
   }
   .export-heading h2 {
     font-size: 14px;
+  }
+}
+
+/* Keep the running experiment visible when controls contain an unapplied draft. */
+.experiment-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding: 12px 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  border-bottom: 1px solid var(--line);
+}
+.experiment-status b {
+  color: var(--mint);
+  font-weight: 500;
+}
+.inspector .decision {
+  margin-bottom: 14px;
+}
+.inspector .mono {
+  overflow-wrap: anywhere;
+}
+.memory-budget span {
+  flex-shrink: 0;
+}
+@media (max-width: 650px) {
+  .experiment-status {
+    gap: 4px;
+    flex-direction: column;
+    font-size: 11px;
+  }
+  .hero input,
+  .control-grid select,
+  .control-grid input {
+    font-size: 16px;
+  }
+  .locale button,
+  .mode-nav > button,
+  .lab-toolbar button,
+  .playback button,
+  .chapter-nav button,
+  .lesson-top button,
+  .request-chip,
+  .cache-legend button {
+    min-height: 44px;
+  }
+  .cache-legend {
+    gap: 4px 12px;
+  }
+  .scenario-controls {
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+  main:has(.scenario-controls) {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  main:has(.scenario-controls) .playback {
+    bottom: calc(68px + env(safe-area-inset-bottom));
   }
 }

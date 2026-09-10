@@ -6,6 +6,7 @@ import {
   finished,
   addRequests,
   tokenize,
+  TICK_MS,
 } from "./core/simulation";
 import {
   scenario,
@@ -59,6 +60,18 @@ const initialLocale = (): Locale => {
     return "en";
   }
 };
+function replaySnapshot(next: Simulation) {
+  return createSimulation(
+    next.config,
+    next.requests.map(({ id, prompt, promptTokens, maxOutput, arrival }) => ({
+      id,
+      prompt,
+      promptTokens,
+      maxOutput,
+      arrival,
+    })),
+  );
+}
 export default function App() {
   const [entry] = useState(() => readEntry(new URL(location.href)));
   const [learningContext] = useState(() =>
@@ -77,12 +90,11 @@ export default function App() {
         ),
   );
   const [initial, setInitial] = useState<Simulation>(() =>
-    entry.chapter !== null
-      ? createSimulation(scenarioConfig("single"), scenarioRequests("single"))
-      : structuredClone(s),
+    entry.chapter !== null ? replaySnapshot(s) : structuredClone(s),
   );
   const [selected, select] = useState(s.requests[0]?.id ?? "");
   const [playing, play] = useState(false);
+  const canAdvance = s.requests.length > 0 && !finished(s);
   const [speed, setSpeed] = useState(1);
   const [prompt, setPrompt] = useState("What is a world model?");
   const [mode, setMode] = useState<Mode>(
@@ -99,11 +111,14 @@ export default function App() {
   const [draft, setDraft] = useState(() =>
     newDraft(entry.chapter !== null ? "single" : entry.experiment),
   );
+  const [appliedDraft, setAppliedDraft] = useState(draft);
+  const draftChanged = JSON.stringify(draft) !== JSON.stringify(appliedDraft);
   const [chapter, setChapter] = useState(entry.chapter ?? 0);
   const [guided, setGuided] = useState(entry.chapter !== null);
   const [exportData, setExportData] = useState<string | null>(null);
   const reset = useCallback(() => {
     play(false);
+    setGuided(false);
     setS(structuredClone(initial));
     select(initial.requests[0]?.id ?? "");
   }, [initial]);
@@ -134,15 +149,25 @@ export default function App() {
     const key = (e: KeyboardEvent) => {
       if (
         e.target instanceof Element &&
-        e.target.closest("input,textarea,select,button,a,summary")
+        e.target.closest(
+          "input,textarea,select,button,a,summary,dialog,[contenteditable=true]",
+        )
+      )
+        return;
+      if (
+        e.altKey ||
+        e.ctrlKey ||
+        e.metaKey ||
+        e.repeat ||
+        document.querySelector("dialog[open]")
       )
         return;
       if (e.code === "Space") {
         e.preventDefault();
-        if (s.requests.length && !finished(s)) play((v) => !v);
+        if (canAdvance) play((v) => !v);
       } else if (e.code === "ArrowRight") {
         e.preventDefault();
-        if (s.requests.length && !finished(s)) tick();
+        if (canAdvance) tick();
       }
     };
     const hidden = () => {
@@ -154,7 +179,7 @@ export default function App() {
       window.removeEventListener("keydown", key);
       document.removeEventListener("visibilitychange", hidden);
     };
-  }, [s, tick]);
+  }, [canAdvance, tick]);
   function install(d: ExperimentDraft, autoplay = true) {
     const next = createSimulation(
       d.config,
@@ -169,8 +194,9 @@ export default function App() {
     setS(next);
     setInitial(structuredClone(next));
     select(next.requests[0]?.id ?? "");
-    play(autoplay);
+    play(autoplay && !matchMedia("(prefers-reduced-motion: reduce)").matches);
     setDraft(d);
+    setAppliedDraft(d);
     setActiveExperiment(d.scenarioId);
     setGuided(false);
   }
@@ -179,17 +205,19 @@ export default function App() {
     install(d, false);
   }
   function send() {
+    if (!prompt.trim() || s.requests.length >= 128) return;
     const id = `REQ-${String(s.requests.length + 1).padStart(3, "0")}`;
     const next = addRequests(s, [
       {
         id,
         prompt,
         promptTokens: Math.max(1, tokenize(prompt).length),
-        maxOutput: draft.output,
-        arrival: s.time,
+        maxOutput: appliedDraft.output,
+        arrival: s.tick * TICK_MS,
       },
     ]);
     setS(next);
+    setInitial(replaySnapshot(next));
     select(id);
     play(!matchMedia("(prefers-reduced-motion: reduce)").matches);
     setGuided(false);
@@ -205,16 +233,17 @@ export default function App() {
       scenarioRequests(
         "burst",
         count,
-        Math.min(draft.promptTokens, 512),
-        draft.output,
+        Math.min(appliedDraft.promptTokens, 512),
+        appliedDraft.output,
         s.config.seed,
-        s.time,
+        s.tick * TICK_MS,
         s.requests.length + 1,
       ),
     );
     setS(next);
+    setInitial(replaySnapshot(next));
     if (!selected) select(next.requests[0].id);
-    play(true);
+    play(!matchMedia("(prefers-reduced-motion: reduce)").matches);
     setMode("load");
     setResourceView(true);
     setGuided(false);
@@ -224,10 +253,9 @@ export default function App() {
     setGuided(true);
     const next = lessonCheckpoint(chapter);
     setS(next);
-    setInitial(
-      createSimulation(scenarioConfig("single"), scenarioRequests("single")),
-    );
+    setInitial(replaySnapshot(next));
     setDraft(newDraft("single"));
+    setAppliedDraft(newDraft("single"));
     setActiveExperiment("single");
     select(next.requests[0]?.id ?? "");
   }
@@ -325,6 +353,15 @@ export default function App() {
                 "Local educational tokenization · no prompt leaves this browser.",
                 "Yerel eğitimsel tokenlaştırma · istem bu tarayıcıdan çıkmaz.",
               )}
+              {s.requests.length >= 128 && (
+                <span className="warning">
+                  {" "}
+                  {t(
+                    "Request limit reached (128). Load a new scenario to continue.",
+                    "İstek sınırına ulaşıldı (128). Devam etmek için yeni senaryo yükle.",
+                  )}
+                </span>
+              )}
             </small>
           </form>
         </section>
@@ -366,8 +403,30 @@ export default function App() {
             onPreset={(id) => setDraft(newDraft(id))}
             onRun={() => install(draft)}
             t={t}
+            dirty={draftChanged}
           />
         )}
+        <div className="experiment-status" aria-live="polite">
+          <span>
+            {t("Loaded experiment", "Yüklü deney")}:{" "}
+            <b>{t(...scenario(activeExperiment).title)}</b>
+          </span>
+          <span>
+            {s.requests.length} {t("requests", "istek")} ·{" "}
+            {s.requests.filter((r) => r.state === "completed").length}{" "}
+            {t("completed", "tamamlandı")} ·{" "}
+            {s.requests.filter((r) => r.state === "rejected").length}{" "}
+            {t("rejected", "reddedildi")}
+          </span>
+          {draftChanged && (
+            <span className="warning">
+              {t(
+                "Unapplied changes — run the scenario to apply.",
+                "Uygulanmamış değişiklikler — uygulamak için senaryoyu çalıştır.",
+              )}
+            </span>
+          )}
+        </div>
         <div className="lab-toolbar">
           <span>
             {t(
@@ -430,7 +489,7 @@ export default function App() {
               locale={locale}
               t={t}
               playing={playing}
-              disabled={!s.requests.length || finished(s)}
+              disabled={!canAdvance}
               time={s.time}
               speed={speed}
               onPlay={() => play(!playing)}

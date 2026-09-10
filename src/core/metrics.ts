@@ -1,9 +1,18 @@
-import type { Simulation, ServingRequest, EventType } from "./types";
+import type {
+  Simulation,
+  ServingRequest,
+  EventType,
+  SimulationEvent,
+} from "./types";
 export const mean = (a: number[]) =>
   a.length ? a.reduce((s, x) => s + x, 0) / a.length : null;
-export function requestMetrics(s: Simulation, r: ServingRequest) {
+export function requestMetrics(
+  s: Simulation,
+  r: ServingRequest,
+  events = s.events,
+) {
   const at = (type: EventType) =>
-    s.events.find((e) => e.requestId === r.id && e.type === type)?.at;
+    events.find((e) => e.requestId === r.id && e.type === type)?.at;
   const arrival = at("REQUEST_ARRIVED"),
     admitted = at("REQUEST_ADMITTED"),
     prefillStart = at("PREFILL_STARTED"),
@@ -33,7 +42,15 @@ export function requestMetrics(s: Simulation, r: ServingRequest) {
   };
 }
 export function metrics(s: Simulation) {
-  const rows = s.requests.map((r) => requestMetrics(s, r));
+  const byRequest = new Map<string, SimulationEvent[]>();
+  for (const e of s.events) {
+    const events = byRequest.get(e.requestId) ?? [];
+    events.push(e);
+    byRequest.set(e.requestId, events);
+  }
+  const rows = s.requests.map((r) =>
+    requestMetrics(s, r, byRequest.get(r.id) ?? []),
+  );
   const emitted = s.events.filter((e) => e.type === "TOKEN_EMITTED").length;
   const arrivals = s.events
     .filter((e) => e.type === "REQUEST_ARRIVED")

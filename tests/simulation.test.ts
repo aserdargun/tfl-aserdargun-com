@@ -10,6 +10,8 @@ import {
   finished,
   active,
   tokenize,
+  addRequests,
+  TICK_MS,
 } from "../src/core/simulation";
 import { requestMetrics, metrics } from "../src/core/metrics";
 import {
@@ -262,4 +264,99 @@ describe("E–F: capacity and scenarios", () => {
       createSimulation(defaultConfig, [...specs, ...specs]),
     ).toThrow();
   });
+});
+
+describe("Review regressions: ordering, progress and immutable history", () => {
+  it("keeps an empty laboratory clock stopped", () => {
+    const s = createSimulation();
+    expect(step(s)).toEqual(s);
+    expect(runToEnd(s)).toEqual(s);
+  });
+  it.each(["static", "continuous", "fair"] as const)(
+    "%s admits by arrival rather than input array order",
+    (policy) => {
+      const specs = scenarioRequests("single", 2, 6, 1);
+      specs[0].arrival = 13;
+      specs[1].arrival = 1;
+      const s = runToEnd(
+        createSimulation({ ...defaultConfig, maxActive: 1, policy }, specs),
+      );
+      expect(
+        s.events
+          .filter((e) => e.type === "REQUEST_ADMITTED")
+          .map((e) => e.requestId),
+      ).toEqual(["REQ-002", "REQ-001"]);
+    },
+  );
+  it("orders between-tick arrivals before rejection decisions", () => {
+    const specs = scenarioRequests("single", 3, 6, 1);
+    specs[0].arrival = 13;
+    specs[1].arrival = 1;
+    specs[2].arrival = 7;
+    const s = runToEnd(
+      createSimulation({ ...defaultConfig, kvCapacityTokens: 1 }, specs),
+    );
+    expect(
+      s.events.every((e, i) => i === 0 || e.at >= s.events[i - 1].at),
+    ).toBe(true);
+    expect(s.events.map((e) => e.id)).toEqual(s.events.map((_, i) => i));
+  });
+  it("carries prefill work across ticks when one token needs multiple ticks", () => {
+    const s = createSimulation(
+      {
+        ...defaultConfig,
+        hardware: { ...defaultConfig.hardware, prefillTokensPerTick: 1 },
+        model: { ...defaultConfig.model, prefillWorkFactor: 2.5 },
+      },
+      scenarioRequests("single", 1, 2, 1),
+    );
+    const states = allSteps(s);
+    expect(states.at(-1)!.requests[0].generated).toBe(1);
+    expect(
+      requestMetrics(states.at(-1)!, states.at(-1)!.requests[0]).prefill,
+    ).toBe(100);
+    for (const x of states) {
+      expect(x.compute).toBeGreaterThanOrEqual(0);
+      expect(x.compute).toBeLessThanOrEqual(1);
+      expect(allocated(x)).toBeLessThanOrEqual(reserved(x));
+    }
+  });
+  it("does not change frozen prior events, token arrays or configuration", () => {
+    let s = single();
+    for (let i = 0; i < 8; i++) s = step(s);
+    const before = JSON.stringify(s);
+    const freeze = (value: unknown) => {
+      if (value && typeof value === "object" && !Object.isFrozen(value)) {
+        Object.freeze(value);
+        Object.values(value).forEach(freeze);
+      }
+    };
+    freeze(s);
+    const next = runToEnd(s);
+    expect(JSON.stringify(s)).toBe(before);
+    expect(next.requests[0].state).toBe("completed");
+  });
+});
+
+it("replays late-added requests with identical event timestamps and metrics", () => {
+  let s = single();
+  for (let i = 0; i < 8; i++) s = step(s);
+  s = addRequests(
+    s,
+    scenarioRequests("burst", 3, 32, 16, 42, s.tick * TICK_MS, 2),
+  );
+  const replay = createSimulation(
+    s.config,
+    s.requests.map(({ id, prompt, promptTokens, maxOutput, arrival }) => ({
+      id,
+      prompt,
+      promptTokens,
+      maxOutput,
+      arrival,
+    })),
+  );
+  const originalEnd = runToEnd(s);
+  const replayEnd = runToEnd(replay);
+  expect(replayEnd.events).toEqual(originalEnd.events);
+  expect(metrics(replayEnd)).toEqual(metrics(originalEnd));
 });

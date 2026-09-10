@@ -35,38 +35,49 @@ export function MetricsPanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const worker = useRef<Worker | null>(null);
-  const [snapshot, setSnapshot] = useState("");
+  const [snapshot, setSnapshot] = useState<ExperimentDraft | null>(null);
+  const stale =
+    snapshot !== null && JSON.stringify(snapshot) !== JSON.stringify(draft);
   useEffect(() => () => worker.current?.terminate(), []);
   function compare() {
     worker.current?.terminate();
     setBusy(true);
     setError("");
     setRows([]);
-    setSnapshot(
-      `${draft.count} requests · ${draft.promptTokens} prompt · ≤${draft.output} output · seed ${draft.config.seed}`,
-    );
-    const w = new Worker(
-      new URL("../core/comparison.worker.ts", import.meta.url),
-      { type: "module" },
-    );
-    worker.current = w;
-    w.onmessage = (e) => {
-      setRows(e.data.result ?? []);
-      setError(e.data.error ?? "");
-      setBusy(false);
-      w.terminate();
-    };
-    w.onerror = () => {
+    setSnapshot(structuredClone(draft));
+    try {
+      const w = new Worker(
+        new URL("../core/comparison.worker.ts", import.meta.url),
+        { type: "module" },
+      );
+      worker.current = w;
+      w.onmessage = (e) => {
+        setRows(e.data.result ?? []);
+        setError(e.data.error ?? "");
+        setBusy(false);
+        w.terminate();
+      };
+      w.onerror = () => {
+        setError(
+          t(
+            "Comparison worker could not run.",
+            "Karşılaştırma işçisi çalışamadı.",
+          ),
+        );
+        setBusy(false);
+        w.terminate();
+      };
+      w.postMessage(draft);
+    } catch {
+      worker.current?.terminate();
       setError(
         t(
-          "Comparison worker could not run.",
-          "Karşılaştırma işçisi çalışamadı.",
+          "Comparison could not start. Try again.",
+          "Karşılaştırma başlatılamadı. Yeniden dene.",
         ),
       );
       setBusy(false);
-      w.terminate();
-    };
-    w.postMessage(draft);
+    }
   }
   return (
     <section className="experiment-panel metrics-panel">
@@ -136,6 +147,14 @@ export function MetricsPanel({
                 </div>
               ))}
             </div>
+            {!rm?.intervals.length && (
+              <p>
+                {t(
+                  "Deliver at least two tokens to observe an interval.",
+                  "Bir aralık gözlemlemek için en az iki token iletilmeli.",
+                )}
+              </p>
+            )}
             <p>
               {t(
                 "Each bar is an observed delivery interval, in simulated ms.",
@@ -198,7 +217,33 @@ export function MetricsPanel({
             : t("Compare policies", "Politikaları karşılaştır")}
         </button>
       </div>
-      {snapshot && <p className="mono">{snapshot}</p>}
+      {busy && (
+        <button
+          onClick={() => {
+            worker.current?.terminate();
+            setBusy(false);
+            setSnapshot(null);
+          }}
+        >
+          {t("Cancel comparison", "Karşılaştırmayı iptal et")}
+        </button>
+      )}
+      {snapshot && (
+        <p className="mono">
+          {snapshot.count} {t("requests", "istek")} · {snapshot.promptTokens}{" "}
+          {t("prompt tokens", "istem tokenı")} · ≤{snapshot.output}{" "}
+          {t("output tokens", "çıktı tokenı")} · {t("seed", "tohum")}{" "}
+          {snapshot.config.seed}
+        </p>
+      )}
+      {stale && (
+        <p className="warning" role="status">
+          {t(
+            "Controls changed. These results describe the previous comparison; run again to update.",
+            "Ayarlar değişti. Bu sonuçlar önceki karşılaştırmaya ait; güncellemek için yeniden çalıştır.",
+          )}
+        </p>
+      )}
       {error && <p role="alert">{error}</p>}
       {rows.length > 0 && (
         <>
@@ -209,6 +254,8 @@ export function MetricsPanel({
                   <th>{t("Policy / active slots", "Politika / etkin yer")}</th>
                   <th>TTFT</th>
                   <th>ITL</th>
+                  <th>{t("End-to-end", "Uçtan uca")}</th>
+                  <th>{t("Duration", "Süre")}</th>
                   <th>tok/s</th>
                   <th>{t("Done / rejected", "Biten / red")}</th>
                 </tr>
@@ -226,6 +273,8 @@ export function MetricsPanel({
                     </td>
                     <td>{ms(r.ttft)}</td>
                     <td>{ms(r.itl)}</td>
+                    <td>{ms(r.e2e)}</td>
+                    <td>{ms(r.duration)}</td>
                     <td>{num(r.throughput, 1)}</td>
                     <td>
                       {r.completed} / {r.rejected}

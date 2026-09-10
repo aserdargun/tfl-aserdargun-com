@@ -46,6 +46,7 @@ export interface RequestSpec {
 export interface ServingRequest extends RequestSpec {
   state: RequestState;
   prefilled: number;
+  prefillWork: number;
   generated: number;
   kvTokens: number;
   reservedTokens: number;

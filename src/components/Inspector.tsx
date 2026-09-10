@@ -1,6 +1,6 @@
 import type { Simulation } from "../core/types";
 import { requestMetrics } from "../core/metrics";
-import { num, ms, stateName, eventName, type T } from "./i18n";
+import { num, ms, stateName, reasonName, eventName, type T } from "./i18n";
 export function Inspector({
   s,
   selected,
@@ -83,6 +83,7 @@ export function Inspector({
             <dt>{t("KV written", "KV yazıldı")}</dt>
             <dd>{num(r.kvTokens * s.config.model.kvMiBPerToken, 1)} MiB</dd>
           </dl>
+          {r.reason && <p className="decision">{t(...reasonName[r.reason])}</p>}
           <p className="inspector-caption">
             {t(
               "All times use the simulation clock. TTFT freezes at first delivery; ITL averages observed intervals.",
@@ -118,14 +119,7 @@ export function Inspector({
               {t(
                 "Decode steps completed",
                 "Tamamlanan çözümleme adımları",
-              )}:{" "}
-              {s.events.filter(
-                (e) => e.requestId === r.id && e.type === "TOKEN_SAMPLED",
-              ).length > 0
-                ? s.events.filter(
-                    (e) => e.requestId === r.id && e.type === "TOKEN_SAMPLED",
-                  ).length - 1
-                : 0}
+              )}: {Math.max(0, r.kvTokens - r.promptTokens, r.generated - 1)}
               <br />
               {t("Completion", "Tamamlanma")}: {ms(m.end)}
             </p>
@@ -183,7 +177,7 @@ export function Timeline({
       cls: "schedule-seg",
     },
     {
-      name: "Prefill",
+      name: t("Prefill", "Ön doldurma"),
       start: m.prefillStart,
       end: m.prefillEnd ?? end,
       cls: "prefill-seg",

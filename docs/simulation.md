@@ -2,13 +2,13 @@
 
 ## Clock and work
 
-The immutable `step` function advances a fixed 20 ms synthetic clock. The first tick processes arrivals at time 0. Rendering only consumes snapshots; no frame duration participates in simulator truth. Playback intentionally displays one tick every 200 wall-clock ms at 1×; speeds change observation cadence, not event timestamps. A paused step performs exactly one tick. Completed scenarios stop the clock.
+The immutable `step` function advances a fixed 20 ms synthetic clock. The first tick processes arrivals at time 0. Rendering only consumes snapshots; no frame duration participates in simulator truth. Playback intentionally displays one tick every 200 wall-clock ms at 1×; speeds change observation cadence, not event timestamps. A paused step performs exactly one tick. Empty and completed scenarios stop the clock. Existing event records are immutable and shared across snapshots; writable request state is copied. Manually added requests arrive at the next unprocessed tick, so reset can reproduce the same admission decisions and event timestamps.
 
 Defaults: prefill capacity 256 tokens/tick; decode capacity 4 short-context steps/tick; max active 4; batch token ceiling 256; weights 4096 MiB; runtime 768 MiB; safety 256 MiB; accelerator memory 8192 MiB; KV 0.125 MiB per processed token. These are authored educational parameters, not fitted benchmark values.
 
 One shared normalized compute budget of 1 per tick is consumed by:
 
-- Prefill: each processed token costs `prefillWorkFactor / prefillTokensPerTick`.
+- Prefill: each processed token costs `prefillWorkFactor / prefillTokensPerTick`. Partial work carries between ticks, including when one token costs more than a full tick.
 - Decode: a step costs `decodeWorkFactor × (1 + (promptTokens + generatedTokens) / 2048) / decodeStepsPerTick`. Partial work carries between ticks.
 
 The additional max-batch-token limit bounds prompt plus decode token work each tick. A request cannot run more than one decode step per tick. Prefill may be chunked across ticks. Context-dependent decode cost is an explicit qualitative teaching model.
@@ -27,7 +27,7 @@ Effective capacity is `max(0, min(configured KV token limit, floor((total - weig
 
 Admission conservatively reserves `prompt + maximum output` token slots. Written KV grows only as tokens are processed. Unwritten reserved space is hatched; request-owned written segments are proportional to effective capacity. The extra selected-request ruler exposes small allocations without distorting the whole-memory scale.
 
-A request larger than the entire effective KV capacity is rejected. Fixed memory exhausting the accelerator produces a distinct model/runtime failure. A full waiting queue rejects incoming requests. Otherwise work waits for slots, a static cohort, or unreserved KV. Reservations and actual allocations are released on completion. No swapping, preemption, prefix reuse or hidden production OOM recovery is simulated.
+A request larger than the entire effective KV capacity is rejected. Fixed memory exhausting the accelerator produces a distinct model/runtime failure. A full waiting queue rejects incoming requests. Arrivals within each tick are recorded in timestamp order before tick-time decisions. Admission considers waiting requests in arrival order even if input specifications were supplied in another order. Otherwise work waits for slots, a static cohort, or unreserved KV. Reservations and actual allocations are released on completion. No swapping, preemption, prefix reuse or hidden production OOM recovery is simulated.
 
 Pressure means an actual pending admission is blocked by KV reservations. Slot saturation means waiting work exists while active slots are full. Overload labels refer to actual queue-capacity rejections. No invented percentage thresholds are used.
 

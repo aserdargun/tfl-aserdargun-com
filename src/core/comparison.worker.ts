@@ -27,21 +27,28 @@ self.onmessage = (
         { policy: "continuous", slots: d.config.maxActive },
         { policy: "fair", slots: d.config.maxActive },
       ] as { policy: Policy; slots: number }[]
-    ).map((x) => {
-      const s = runToEnd(
-        createSimulation(
-          { ...d.config, policy: x.policy, maxActive: x.slots },
-          specs,
-        ),
-      );
-      return {
-        ...x,
-        ...metrics(s),
-        completed: s.requests.filter((r) => r.state === "completed").length,
-        rejected: s.requests.filter((r) => r.state === "rejected").length,
-        duration: s.time,
-      };
-    });
+    )
+      .filter(
+        (x, i, rows) =>
+          rows.findIndex(
+            (r) => r.policy === x.policy && r.slots === x.slots,
+          ) === i,
+      )
+      .map((x) => {
+        const s = runToEnd(
+          createSimulation(
+            { ...d.config, policy: x.policy, maxActive: x.slots },
+            specs,
+          ),
+        );
+        return {
+          ...x,
+          ...metrics(s),
+          completed: s.requests.filter((r) => r.state === "completed").length,
+          rejected: s.requests.filter((r) => r.state === "rejected").length,
+          duration: s.time,
+        };
+      });
     self.postMessage({ result });
   } catch (error) {
     self.postMessage({

@@ -35,7 +35,7 @@ Production preview uses http://127.0.0.1:4299. Static artifact: `dist/`. Azure r
 - **Metrics:** TTFT, ITL, end-to-end latency, queue time, token/request throughput, individual distributions and an isolated worker-based policy comparison.
 - **Labs:** Choose reproducible presets including Load Storm, KV Wall, Overload and Batching Trade-off.
 
-Changes in experiment controls apply with **Run scenario**. Preset buttons load a paused scenario. **Reset** restores the last loaded scenario. On mobile, experiment controls open as a bottom sheet. EN/TR switching preserves simulation state and remembers language where browser storage is available. Space plays/pauses and Right Arrow steps when focus is outside controls. A hidden tab pauses playback. Reduced-motion users begin paused after Send; all state has a textual representation.
+Changes in experiment controls apply with **Run scenario**. Preset buttons load a paused scenario. **Reset** replays the loaded scenario, including manually added requests at their original simulated arrival times. On mobile, experiment controls open as a bottom sheet. EN/TR switching preserves simulation state and remembers language where browser storage is available. Space plays/pauses and Right Arrow steps when focus is outside controls. A hidden tab pauses playback. Reduced-motion users begin paused after Send, Add load and Run scenario; all state has a textual representation.
 
 ## Scientific boundary
 
