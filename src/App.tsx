@@ -1,3 +1,7 @@
+import { readServing, executionLink } from "./ils/handoff";
+import { buildReturnLearningLink } from "@aserdargun/lab-core";
+import { learningGraph } from "./ils/graph";
+import "./ils/handoff.css";
 import { useState, useEffect, useCallback } from "react";
 import { ArrowRight, Send, Plus, Download, Layers } from "lucide-react";
 import {
@@ -73,6 +77,7 @@ function replaySnapshot(next: Simulation) {
   );
 }
 export default function App() {
+  const [incoming] = useState(() => readServing(new URL(location.href)));
   const [entry] = useState(() => readEntry(new URL(location.href)));
   const [learningContext] = useState(() =>
     readTflContext(new URL(location.href)),
@@ -80,7 +85,7 @@ export default function App() {
   const [locale, setLocale] = useState<Locale>(initialLocale);
   const t = (en: string, tr: string) => (locale === "en" ? en : tr);
   const [s, setS] = useState(() =>
-    entry.chapter !== null
+    incoming ? createSimulation(incoming.draft.config,scenarioRequests(incoming.draft.scenarioId,incoming.draft.count,incoming.draft.promptTokens,incoming.draft.output)) : entry.chapter !== null
       ? lessonCheckpoint(entry.chapter)
       : createSimulation(
           scenarioConfig(entry.experiment),
@@ -106,15 +111,15 @@ export default function App() {
   );
   const [resourceView, setResourceView] = useState(false);
   const [activeExperiment, setActiveExperiment] = useState<ScenarioId>(
-    entry.chapter !== null ? "single" : entry.experiment,
+    incoming?.draft.scenarioId ?? (entry.chapter !== null ? "single" : entry.experiment),
   );
   const [draft, setDraft] = useState(() =>
-    newDraft(entry.chapter !== null ? "single" : entry.experiment),
+    incoming?.draft ?? newDraft(entry.chapter !== null ? "single" : entry.experiment),
   );
   const [appliedDraft, setAppliedDraft] = useState(draft);
   const draftChanged = JSON.stringify(draft) !== JSON.stringify(appliedDraft);
   const [chapter, setChapter] = useState(entry.chapter ?? 0);
-  const [guided, setGuided] = useState(entry.chapter !== null);
+  const [guided, setGuided] = useState(!incoming && entry.chapter !== null);
   const [exportData, setExportData] = useState<string | null>(null);
   const reset = useCallback(() => {
     play(false);
@@ -466,6 +471,14 @@ export default function App() {
             </button>
           </div>
         </div>
+        {incoming && <section className="semantic-handoff" data-testid="serving-context">
+          <strong>{t("Starting context from", "Başlangıç bağlamı:")} {incoming.context.sourceLab.toUpperCase()}</strong>
+          <p data-testid="serving-projection">{incoming.draft.config.model.name} · {incoming.draft.promptTokens} {t("prompt tokens", "istem tokenı")} · {incoming.draft.count} {t("requests", "istek")} · {incoming.draft.config.maxActive} {t("active slots", "etkin yer")}</p>
+          <p>{incoming.context.profile==='serving-workload' ? t("Typical context becomes the illustrative input length; average concurrency becomes active slots and peak concurrency becomes the arriving cohort. Weight storage is calculated from the model class and bit width. KV/token, a 75% cohort reservation budget, memory pool and timings are TFL assumptions, not the DCL hardware. Supported bounds: 32K context, 16 active slots, 64 arrivals.", "Tipik bağlam örnek girdi uzunluğuna, ortalama eşzamanlılık etkin yerlere, tepe eşzamanlılık gelen istek grubuna dönüşür. Ağırlık belleği model sınıfı ve bit genişliğinden hesaplanır. KV/token, grubun %75’i için rezervasyon bütçesi, bellek havuzu ve süreler TFL varsayımlarıdır; DCL donanımı değildir. Sınırlar: 32K bağlam, 16 etkin yer, 64 istek.") : t("ARL’s context pressure class maps to 128 or 8192 illustrative input tokens. Priority is descriptive; TFL does not implement per-request priority scheduling. This is a new request, with no agent content or authority.", "ARL’nin bağlam baskısı sınıfı 128 veya 8192 örnek girdi tokenına eşlenir. Öncelik betimseldir; TFL istek başına öncelik zamanlaması uygulamaz. Bu, ajan içeriği veya yetkisi taşımayan yeni bir istektir.")}</p>
+          <p>{t("This describes the imported starting profile. Current controls and replay remain authoritative.", "Bu bilgi içe aktarılan başlangıç profilini açıklar. Güncel kontroller ve tekrar oynatım belirleyicidir.")}</p>
+          <a data-testid="return-source" href={buildReturnLearningLink(learningGraph,incoming.context,locale) ?? undefined}>{t("Return to", "Geri dön:")} {incoming.context.sourceLab.toUpperCase()}</a>
+        </section>}
+        {new URL(location.href).searchParams.has('ils') && !incoming && !learningContext && <section className="semantic-handoff" role="status">{t("This learning context is unavailable or outside the supported scenario range. The standard experiment is ready.", "Bu öğrenme bağlamı kullanılamıyor veya desteklenen senaryo aralığı dışında. Standart deney hazır.")}</section>}
         {learningContext && (
           <LearningContextNotice
             source="GEX"
@@ -566,6 +579,12 @@ export default function App() {
           t={t}
           locale={locale}
         />
+        <section className="semantic-handoff">
+          <strong>{t("Serve → Execute", "Sun → Yürüt")}</strong>
+          <p>{t("Open a GPU teaching scene for the phase you want to inspect. This transfers a compute/access pattern, never an exact kernel trace.", "İncelemek istediğiniz aşama için GPU eğitim sahnesini açın. Hesaplama/erişim örüntüsü aktarılır; kesin kernel izi aktarılmaz.")}</p>
+          <a data-testid="tfl-to-gex-prefill" href={executionLink('prefill',activeExperiment,locale)}>{t("Prefill: dive into matrix execution → GEX", "Prefill: matris yürütmesine in → GEX")}</a>
+          <a data-testid="tfl-to-gex-decode" href={executionLink('decode',activeExperiment,locale)}>{t("Decode: inspect GPU memory → GEX", "Decode: GPU belleğini incele → GEX")}</a>
+        </section>
         <LabShell
           manifest={manifest}
           experiment={experiments.find((x) => x.id === activeExperiment)!}

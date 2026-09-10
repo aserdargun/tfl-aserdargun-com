@@ -73,7 +73,7 @@ export function ScenarioControls({
             value={draft.count}
             onChange={(e) => onDraft({ ...draft, count: +e.target.value })}
           >
-            {[1, 2, 4, 8, 16, 32, 64].map((n) => (
+            {[...new Set([1, 2, 4, 8, 16, 32, 64, draft.count])].sort((a,b)=>a-b).map((n) => (
               <option key={n}>{n}</option>
             ))}
           </select>
@@ -86,7 +86,7 @@ export function ScenarioControls({
               onDraft({ ...draft, promptTokens: +e.target.value })
             }
           >
-            {[6, 32, 64, 128, 512, 2048, 8192, 32768].map((n) => (
+            {[...new Set([6, 32, 64, 128, 512, 2048, 8192, 32768, draft.promptTokens])].sort((a,b)=>a-b).map((n) => (
               <option key={n} value={n}>
                 {num(n)}
               </option>
@@ -127,7 +127,7 @@ export function ScenarioControls({
             value={c.maxActive}
             onChange={(e) => config({ maxActive: +e.target.value })}
           >
-            {[1, 2, 4, 8, 16].map((n) => (
+            {[...new Set([1, 2, 4, 8, 16, c.maxActive])].sort((a,b)=>a-b).map((n) => (
               <option key={n}>{n}</option>
             ))}
           </select>
@@ -149,7 +149,7 @@ export function ScenarioControls({
             value={c.kvCapacityTokens}
             onChange={(e) => config({ kvCapacityTokens: +e.target.value })}
           >
-            {[128, 256, 600, 1200, 4096, 16384, 40000].map((n) => (
+            {[...new Set([128, 256, 600, 1200, 4096, 16384, 40000, c.kvCapacityTokens])].sort((a,b)=>a-b).map((n) => (
               <option key={n} value={n}>
                 {num(n)}
               </option>
@@ -188,6 +188,7 @@ export function ScenarioControls({
               })
             }
           >
+            {![2048,4096,8192].includes(c.model.weightMiB) && <option value={c.model.weightMiB}>{c.model.name} · {(c.model.weightMiB/1024).toFixed(2)} GiB</option>}
             <option value="2048">{t("Small", "Küçük")} · 2 GiB</option>
             <option value="4096">{t("Medium", "Orta")} · 4 GiB</option>
             <option value="8192">{t("Large", "Büyük")} · 8 GiB</option>
@@ -206,7 +207,7 @@ export function ScenarioControls({
               })
             }
           >
-            {[4096, 8192, 12288, 16384].map((n) => (
+            {[...new Set([4096, 8192, 12288, 16384, c.hardware.memoryMiB])].sort((a,b)=>a-b).map((n) => (
               <option key={n} value={n}>
                 {n / 1024} GiB
               </option>
