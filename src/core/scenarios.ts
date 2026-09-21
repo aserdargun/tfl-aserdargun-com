@@ -67,8 +67,8 @@ export const scenarios: ScenarioDefinition[] = [
     id: "code",
     title: ["Code generation", "Kod üretimi"],
     description: [
-      "Longer output keeps requests and KV state alive.",
-      "Uzun çıktı istekleri ve KV durumunu daha uzun tutar.",
+      "Scripted longer output keeps requests and KV state alive; no code is generated.",
+      "Hazırlanmış uzun çıktı istekleri ve KV durumunu daha uzun tutar; gerçek kod üretilmez.",
     ],
     promptTokens: 2048,
     output: 128,
@@ -108,7 +108,7 @@ export const scenarios: ScenarioDefinition[] = [
     title: ["Overload", "Aşırı yük"],
     description: [
       "64 arrivals exceed a waiting queue of 24.",
-      "64 istek, 24 kişilik bekleme kuyruğunu aşar.",
+      "64 istek, 24 istek kapasiteli bekleme kuyruğunu aşar.",
     ],
     promptTokens: 512,
     output: 32,

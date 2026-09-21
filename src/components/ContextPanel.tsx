@@ -1,9 +1,57 @@
 import { ExternalLink } from "lucide-react";
-import { atlasLink, relatedConcepts } from "../integrations/links";
+import {
+  atlasLink,
+  portfolioLink,
+  relatedConcepts,
+} from "../integrations/links";
 import type { T, Locale } from "./i18n";
 export function ContextPanel({ t, locale }: { t: T; locale: Locale }) {
   return (
     <section className="context-panel">
+      <details>
+        <summary>
+          {t(
+            "TFL in the AI Learning System",
+            "Yapay Zekâ Öğrenme Sistemi içinde TFL",
+          )}
+        </summary>
+        <p>
+          {t(
+            "TFL is the hands-on serving laboratory of LLM Runtime & Serving Atlas in the Foundation layer of aserdargun.com. Learn the concepts in LLM Atlas, follow requests here, then inspect a related GPU teaching scene in GEX. GEX remains a companion of GPU Kernel Atlas.",
+            "TFL, aserdargun.com’un Temel katmanında LLM Runtime & Serving Atlas’ın uygulamalı sunum laboratuvarıdır. Kavramları LLM Atlas’ta öğren, istekleri burada izle, ardından ilgili GPU eğitim sahnesini GEX’te incele. GEX, GPU Kernel Atlas’ın tamamlayıcı uygulamasıdır.",
+          )}
+        </p>
+        <p>
+          {t(
+            "DCL can pass a bounded serving workload; ARL can pass a request context class. TFL starts a new paused simulation from that educational metadata. Prompts, agent authority, hardware measurements and exact execution state are not transferred. Returning opens the source experiment, not its previous runtime state.",
+            "DCL sınırlı bir sunum iş yükü, ARL ise istek bağlamı sınıfı aktarabilir. TFL bu eğitim verileriyle duraklatılmış yeni bir simülasyon başlatır. İstemler, ajan yetkileri, donanım ölçümleri ve kesin yürütme durumu aktarılmaz. Geri dönüş, kaynak deneyi açar; önceki çalışma durumunu geri yüklemez.",
+          )}
+        </p>
+        <nav
+          className="related-links"
+          aria-label={t("Portfolio learning paths", "Portföy öğrenme yolları")}
+        >
+          <a href={portfolioLink(locale)} target="_blank" rel="noreferrer">
+            {t("Explore all applications", "Tüm uygulamaları keşfet")}{" "}
+            <ExternalLink />
+          </a>
+          <a
+            href={`https://dcl.aserdargun.com/?lang=${locale}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            DCL · {t("Deployment choices", "Dağıtım tercihleri")}{" "}
+            <ExternalLink />
+          </a>
+          <a
+            href={`https://arl.aserdargun.com/?lang=${locale}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            ARL · {t("Agent requests", "Ajan istekleri")} <ExternalLink />
+          </a>
+        </nav>
+      </details>
       <details>
         <summary>
           {t("Where am I in the stack?", "Yığının neresindeyim?")}
@@ -21,7 +69,7 @@ export function ContextPanel({ t, locale }: { t: T; locale: Locale }) {
           <strong>
             INF · {t("Inference runtime", "Çıkarım çalışma zamanı")}
           </strong>
-          <span>GEX · {t("Hardware execution", "Donanım yürütmesi")}</span>
+          <span>GEX · {t("GPU execution model", "GPU yürütme modeli")}</span>
         </div>
         <p>
           {t(
@@ -36,14 +84,16 @@ export function ContextPanel({ t, locale }: { t: T; locale: Locale }) {
           target="_blank"
           rel="noreferrer"
         >
-          Hugging Face · Caching <ExternalLink />
+          Hugging Face · {t("How caching works", "Önbellek nasıl çalışır")}{" "}
+          <ExternalLink />
         </a>
         <a
           href="https://docs.vllm.ai/en/v0.22.1/usage/metrics/"
           target="_blank"
           rel="noreferrer"
         >
-          vLLM · Metrics definitions <ExternalLink />
+          vLLM 0.22.1 · {t("Metrics definitions", "Ölçüt tanımları")}{" "}
+          <ExternalLink />
         </a>
         <span>
           {t(

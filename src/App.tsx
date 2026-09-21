@@ -1,5 +1,5 @@
 import { readServing, executionLink } from "./ils/handoff";
-import { buildReturnLearningLink } from "@aserdargun/lab-core";
+import { buildReturnLearningLink, localize } from "@aserdargun/lab-core";
 import { learningGraph } from "./ils/graph";
 import "./ils/handoff.css";
 import { useState, useEffect, useCallback } from "react";
@@ -39,6 +39,7 @@ import { LabShell, LearningContextNotice } from "@aserdargun/lab-ui";
 import { manifest, experiments } from "./ils/catalog";
 import { readTflContext, contextExplanation, gpuHandoff } from "./ils/context";
 import { readEntry } from "./ils/routing";
+import { portfolioLink } from "./integrations/links";
 type Mode = "follow" | "load" | "memory" | "scheduler" | "metrics" | "labs";
 const modes: { id: Mode; name: [string, string] }[] = [
   { id: "follow", name: ["Follow", "İzle"] },
@@ -141,6 +142,19 @@ export default function App() {
   }, [s]);
   useEffect(() => {
     document.documentElement.lang = locale;
+    document.title = t(
+      "TFL — Token Flow Laboratory",
+      "TFL — Token Akışı Laboratuvarı",
+    );
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute(
+        "content",
+        t(
+          "Follow a simulated LLM request through queueing, prefill, KV cache, decode and token delivery. Nine experiments and ten guided checkpoints; no model or hardware benchmark runs.",
+          "Simüle bir LLM isteğini kuyruk, ön doldurma, KV önbelleği, çözümleme ve token iletimi boyunca izle. Dokuz deney ve on rehberli kontrol noktası; gerçek model veya donanım kıyaslaması çalışmaz.",
+        ),
+      );
     try {
       localStorage.setItem("tfl-language", locale);
     } catch {
@@ -269,6 +283,7 @@ export default function App() {
     setExportData(exportSimulation(s));
   }
   const hasControls = mode !== "follow";
+  const experiment = experiments.find((x) => x.id === activeExperiment)!;
   return (
     <>
       <a className="skip-link" href="#laboratory">
@@ -587,7 +602,7 @@ export default function App() {
         </section>
         <LabShell
           manifest={manifest}
-          experiment={experiments.find((x) => x.id === activeExperiment)!}
+          experiment={experiment}
           locale={locale}
           relatedLabs={manifest.related.labs!.map((link) =>
             link.id === "gex"
@@ -603,7 +618,30 @@ export default function App() {
                 }
               : link,
           )}
-        />
+        >
+          <details className="ils-details">
+            <summary>
+              {t(
+                "What to observe in this experiment",
+                "Bu deneyde neyi gözlemlemeli",
+              )}
+            </summary>
+            <div className="ils-details-body">
+              <p>{t(
+                "This guide describes the preset defaults. Your applied controls determine the current simulation.",
+                "Bu rehber hazır deneyin varsayılan ayarlarını açıklar. Geçerli simülasyonu uyguladığın kontroller belirler.",
+              )}</p>
+              {experiment.learningObjectives.map((objective, index) => (
+                <p key={index}>{localize(objective, locale)}</p>
+              ))}
+              {experiment.observations?.map((observation) => (
+                <p key={observation.id}>
+                  {localize(observation.explanation, locale)}
+                </p>
+              ))}
+            </div>
+          </details>
+        </LabShell>
         <ContextPanel t={t} locale={locale} />
         <footer>
           <span>
@@ -616,8 +654,8 @@ export default function App() {
               "Keyboard: Space to play/pause · Right arrow to step.",
               "Klavye: Boşluk oynat/duraklat · Sağ ok bir adım.",
             )}{" "}
-            <a href="https://aserdargun.com" target="_blank" rel="noreferrer">
-              AI Learning System
+            <a href={portfolioLink(locale)} target="_blank" rel="noreferrer">
+              {t("AI Learning System", "Yapay Zekâ Öğrenme Sistemi")}
             </a>
           </span>
           <button onClick={exportEvents} disabled={!s.events.length}>

@@ -1,4 +1,6 @@
 import type { Locale } from "../components/i18n";
+export const portfolioLink = (locale: Locale) =>
+  `https://aserdargun.com/${locale === "tr" ? "tr/" : ""}`;
 export const atlasLink = (concept: string, locale: Locale) =>
   `https://llm.aserdargun.com/${locale}/learn/concepts/${concept}`;
 export const gexLink = (

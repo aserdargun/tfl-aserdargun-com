@@ -17,8 +17,8 @@
     "concepts": ["concept:prefill", "concept:decode", "concept:ttft"],
     "learningObjectives": [
       {
-        "en": "Follow the full lifetime of one prompt.",
-        "tr": "Bir istemin tüm yaşam döngüsünü izle."
+        "en": "Distinguish queueing, prefill, first-token delivery and later decode steps.",
+        "tr": "Kuyrukta beklemeyi, ön doldurmayı, ilk token iletimini ve sonraki çözümleme adımlarını ayırt et."
       }
     ],
     "controls": [
@@ -42,8 +42,8 @@
           "tr": "İstek yaşam döngüsü"
         },
         "explanation": {
-          "en": "Inspect the event timeline, queue and delivered tokens.",
-          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+          "en": "Step through the request inspector. TTFT appears at the first delivery; ITL needs at least two delivered tokens.",
+          "tr": "İstek inceleyicide adım adım ilerle. TTFT ilk iletimde görünür; ITL için en az iki token iletilmelidir."
         },
         "evidenceRefs": ["simulated-events", "ttft"]
       }
@@ -101,8 +101,8 @@
     "concepts": ["concept:concurrency", "concept:scheduling"],
     "learningObjectives": [
       {
-        "en": "A burst of users competes for four active slots.",
-        "tr": "Bir kullanıcı dalgası dört etkin yer için yarışır."
+        "en": "Explain why a burst can increase queue time even when each request uses the same model.",
+        "tr": "Her istek aynı modeli kullansa da ani yükün kuyruk süresini neden artırabildiğini açıkla."
       }
     ],
     "controls": [
@@ -126,8 +126,8 @@
           "tr": "İstek yaşam döngüsü"
         },
         "explanation": {
-          "en": "Inspect the event timeline, queue and delivered tokens.",
-          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+          "en": "Compare early and late requests: four active slots share the work budget while other requests wait for admission.",
+          "tr": "Erken ve geç istekleri karşılaştır: dört etkin yer iş bütçesini paylaşırken diğer istekler kabul edilmeyi bekler."
         },
         "evidenceRefs": ["simulated-events", "ttft"]
       }
@@ -146,10 +146,10 @@
           "en": "Learn the theory · LLM Atlas",
           "tr": "Kuramı öğren · LLM Atlas"
         },
-        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "url": "https://llm.aserdargun.com/en/learn/concepts/batching",
         "localizedUrls": {
-          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
-          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+          "en": "https://llm.aserdargun.com/en/learn/concepts/batching",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/batching"
         }
       }
     ],
@@ -185,8 +185,8 @@
     "concepts": ["concept:concurrency", "concept:ttft"],
     "learningObjectives": [
       {
-        "en": "A request arrives every 200 simulated milliseconds.",
-        "tr": "Her 200 simülasyon milisaniyesinde bir istek gelir."
+        "en": "Relate arrival cadence to queue growth and available serving capacity.",
+        "tr": "İstek geliş aralığını kuyruk büyümesi ve kullanılabilir sunum kapasitesiyle ilişkilendir."
       }
     ],
     "controls": [
@@ -210,8 +210,8 @@
           "tr": "İstek yaşam döngüsü"
         },
         "explanation": {
-          "en": "Inspect the event timeline, queue and delivered tokens.",
-          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+          "en": "Watch scheduled arrivals become waiting requests every 200 simulated ms. Compare their queue times with the burst preset.",
+          "tr": "Planlanmış isteklerin her 200 simülasyon ms’sinde kuyruğa girişini izle. Kuyruk sürelerini Yük Fırtınası ile karşılaştır."
         },
         "evidenceRefs": ["simulated-events", "ttft"]
       }
@@ -230,10 +230,10 @@
           "en": "Learn the theory · LLM Atlas",
           "tr": "Kuramı öğren · LLM Atlas"
         },
-        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "url": "https://llm.aserdargun.com/en/learn/concepts/batching",
         "localizedUrls": {
-          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
-          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+          "en": "https://llm.aserdargun.com/en/learn/concepts/batching",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/batching"
         }
       }
     ],
@@ -273,8 +273,8 @@
     ],
     "learningObjectives": [
       {
-        "en": "One long document arrives before seven short questions.",
-        "tr": "Uzun bir belge yedi kısa sorudan önce gelir."
+        "en": "Explain how chunked prefill and shared work affect long and short requests differently.",
+        "tr": "Parçalı ön doldurmanın ve ortak iş bütçesinin uzun ve kısa istekleri nasıl farklı etkilediğini açıkla."
       }
     ],
     "controls": [
@@ -298,8 +298,8 @@
           "tr": "İstek yaşam döngüsü"
         },
         "explanation": {
-          "en": "Inspect the event timeline, queue and delivered tokens.",
-          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+          "en": "Inspect REQ-001 with 32,768 input tokens and the seven 64-token requests. Compare prefill duration, TTFT and KV reservations.",
+          "tr": "32.768 giriş tokenlı REQ-001 ile 64 tokenlı yedi isteği incele. Ön doldurma süresini, TTFT’yi ve KV rezervasyonlarını karşılaştır."
         },
         "evidenceRefs": ["simulated-events", "ttft"]
       }
@@ -351,14 +351,14 @@
       "tr": "Uzun çıktı istekleri ve KV durumunu nasıl daha uzun süre tutar?"
     },
     "description": {
-      "en": "Longer output keeps requests and KV state alive.",
-      "tr": "Uzun çıktı istekleri ve KV durumunu daha uzun tutar."
+      "en": "Scripted longer output keeps requests and KV state alive; no code is generated.",
+      "tr": "Hazırlanmış uzun çıktı istekleri ve KV durumunu daha uzun tutar; gerçek kod üretilmez."
     },
     "concepts": ["concept:decode", "concept:kv-cache"],
     "learningObjectives": [
       {
-        "en": "Longer output keeps requests and KV state alive.",
-        "tr": "Uzun çıktı istekleri ve KV durumunu daha uzun tutar."
+        "en": "Relate longer scripted output to slot occupancy, decode work and KV lifetime.",
+        "tr": "Uzun hazırlanmış çıktıyı etkin yerlerin doluluğu, çözümleme işi ve KV yaşam süresiyle ilişkilendir."
       }
     ],
     "controls": [
@@ -382,8 +382,8 @@
           "tr": "İstek yaşam döngüsü"
         },
         "explanation": {
-          "en": "Inspect the event timeline, queue and delivered tokens.",
-          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+          "en": "Follow KV growth after the first token and its release at completion. This preset represents a longer-output workload; it does not generate or validate code.",
+          "tr": "İlk tokendan sonra KV büyümesini ve tamamlanınca serbest bırakılmasını izle. Bu hazır deney uzun çıktılı bir iş yükünü temsil eder; kod üretmez veya doğrulamaz."
         },
         "evidenceRefs": ["simulated-events", "ttft"]
       }
@@ -402,10 +402,10 @@
           "en": "Learn the theory · LLM Atlas",
           "tr": "Kuramı öğren · LLM Atlas"
         },
-        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "url": "https://llm.aserdargun.com/en/learn/concepts/kv-cache",
         "localizedUrls": {
-          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
-          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+          "en": "https://llm.aserdargun.com/en/learn/concepts/kv-cache",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/kv-cache"
         }
       }
     ],
@@ -441,8 +441,8 @@
     "concepts": ["concept:concurrency", "concept:scheduling"],
     "learningObjectives": [
       {
-        "en": "Short prompts with different completion times.",
-        "tr": "Farklı bitiş sürelerine sahip kısa istemler."
+        "en": "Explain how different completion times create opportunities to admit waiting requests.",
+        "tr": "Farklı tamamlanma sürelerinin bekleyen istekleri kabul etmek için nasıl fırsat oluşturduğunu açıkla."
       }
     ],
     "controls": [
@@ -466,8 +466,8 @@
           "tr": "İstek yaşam döngüsü"
         },
         "explanation": {
-          "en": "Inspect the event timeline, queue and delivered tokens.",
-          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+          "en": "Track the 32 short requests as slots become free. Compare static and continuous admission with identical seeded work.",
+          "tr": "Etkin yerler boşalırken 32 kısa isteği izle. Aynı tohumla üretilen iş yükünde sabit ve sürekli kabulü karşılaştır."
         },
         "evidenceRefs": ["simulated-events", "ttft"]
       }
@@ -486,10 +486,10 @@
           "en": "Learn the theory · LLM Atlas",
           "tr": "Kuramı öğren · LLM Atlas"
         },
-        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "url": "https://llm.aserdargun.com/en/learn/concepts/batching",
         "localizedUrls": {
-          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
-          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+          "en": "https://llm.aserdargun.com/en/learn/concepts/batching",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/batching"
         }
       }
     ],
@@ -525,8 +525,8 @@
     "concepts": ["concept:kv-cache", "concept:gpu-memory"],
     "learningObjectives": [
       {
-        "en": "Memory reservations hold new requests in the queue.",
-        "tr": "Bellek rezervasyonları yeni istekleri kuyrukta tutar."
+        "en": "Distinguish written KV state, reserved capacity and memory-blocked admission.",
+        "tr": "Yazılmış KV durumunu, ayrılan kapasiteyi ve bellek nedeniyle bekleyen kabulü ayırt et."
       }
     ],
     "controls": [
@@ -550,8 +550,8 @@
           "tr": "İstek yaşam döngüsü"
         },
         "explanation": {
-          "en": "Inspect the event timeline, queue and delivered tokens.",
-          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+          "en": "Select a waiting request and read its reason. Compare the written and reserved rulers; reserved capacity can block admission before it is fully written.",
+          "tr": "Bekleyen bir isteği seç ve nedenini oku. Yazılmış ve ayrılmış bellek göstergelerini karşılaştır; ayrılan kapasite tamamen yazılmadan da kabulü engelleyebilir."
         },
         "evidenceRefs": ["simulated-events", "ttft"]
       }
@@ -570,10 +570,10 @@
           "en": "Learn the theory · LLM Atlas",
           "tr": "Kuramı öğren · LLM Atlas"
         },
-        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "url": "https://llm.aserdargun.com/en/learn/concepts/kv-cache",
         "localizedUrls": {
-          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
-          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+          "en": "https://llm.aserdargun.com/en/learn/concepts/kv-cache",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/kv-cache"
         }
       }
     ],
@@ -604,13 +604,13 @@
     },
     "description": {
       "en": "64 arrivals exceed a waiting queue of 24.",
-      "tr": "64 istek, 24 kişilik bekleme kuyruğunu aşar."
+      "tr": "64 istek, 24 istek kapasiteli bekleme kuyruğunu aşar."
     },
     "concepts": ["concept:concurrency", "concept:scheduling"],
     "learningObjectives": [
       {
-        "en": "64 arrivals exceed a waiting queue of 24.",
-        "tr": "64 istek, 24 kişilik bekleme kuyruğunu aşar."
+        "en": "Distinguish queue-capacity rejection from memory rejection and normal waiting.",
+        "tr": "Kuyruk kapasitesi nedeniyle reddi, bellek nedeniyle reddi ve normal beklemeyi ayırt et."
       }
     ],
     "controls": [
@@ -634,8 +634,8 @@
           "tr": "İstek yaşam döngüsü"
         },
         "explanation": {
-          "en": "Inspect the event timeline, queue and delivered tokens.",
-          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+          "en": "Step through 64 simultaneous arrivals with a queue limit of 24. Inspect the 40 queue rejections and include rejected counts when comparing policies.",
+          "tr": "Kuyruk sınırı 24 iken aynı anda gelen 64 isteği adımla. Kuyruk nedeniyle reddedilen 40 isteği incele ve politika karşılaştırmasında ret sayılarını dikkate al."
         },
         "evidenceRefs": ["simulated-events", "ttft"]
       }
@@ -654,10 +654,10 @@
           "en": "Learn the theory · LLM Atlas",
           "tr": "Kuramı öğren · LLM Atlas"
         },
-        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "url": "https://llm.aserdargun.com/en/learn/concepts/batching",
         "localizedUrls": {
-          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
-          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+          "en": "https://llm.aserdargun.com/en/learn/concepts/batching",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/batching"
         }
       }
     ],
@@ -693,8 +693,8 @@
     "concepts": ["concept:scheduling", "concept:ttft"],
     "learningObjectives": [
       {
-        "en": "Compare identical work with static and dynamic admission.",
-        "tr": "Aynı işi sabit ve dinamik kabul ile karşılaştır."
+        "en": "Compare throughput and per-request latency under identical workload and seed.",
+        "tr": "Aynı iş yükü ve tohum altında toplam verimi ve istek başına gecikmeyi karşılaştır."
       }
     ],
     "controls": [
@@ -718,8 +718,8 @@
           "tr": "İstek yaşam döngüsü"
         },
         "explanation": {
-          "en": "Inspect the event timeline, queue and delivered tokens.",
-          "tr": "Olay zaman çizelgesini, kuyruğu ve iletilen tokenları incele."
+          "en": "Open Metrics and Compare policies. Inspect TTFT, ITL, total duration and completed/rejected counts together; these are synthetic outcomes, not engine benchmarks.",
+          "tr": "Ölçütler bölümünde Politikaları karşılaştır’a bas. TTFT, ITL, toplam süre ve tamamlanan/reddedilen sayılarını birlikte incele; bunlar sentetik sonuçlardır, motor kıyaslamaları değildir."
         },
         "evidenceRefs": ["simulated-events", "ttft"]
       }
@@ -738,10 +738,10 @@
           "en": "Learn the theory · LLM Atlas",
           "tr": "Kuramı öğren · LLM Atlas"
         },
-        "url": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
+        "url": "https://llm.aserdargun.com/en/learn/concepts/batching",
         "localizedUrls": {
-          "en": "https://llm.aserdargun.com/en/learn/concepts/prefill-decode",
-          "tr": "https://llm.aserdargun.com/tr/learn/concepts/prefill-decode"
+          "en": "https://llm.aserdargun.com/en/learn/concepts/batching",
+          "tr": "https://llm.aserdargun.com/tr/learn/concepts/batching"
         }
       }
     ],

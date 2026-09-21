@@ -1,3 +1,5 @@
+> Historical implementation QA from the initial September 2026 release. The measurements and screenshots below describe that pass, not the current working tree. Current integration behavior is documented in [integrations.md](integrations.md) and [CROSS-LAB-HANDOFF.md](CROSS-LAB-HANDOFF.md).
+
 # TFL core verification — 2026-09-09
 
 ## Build and reproducibility
@@ -56,4 +58,4 @@ The implementation was visually verified against the reference's typography, pal
 
 Confirmed: serving differs from one forward pass; KV is runtime attention state rather than a database; first token comes from prefill scores; subsequent output is iterative; final emitted token is not yet cached; weights are not all runtime memory; throughput does not define user latency; scheduler policies are educational; prefill/decode bottlenecks are workload/architecture dependent; quantization has no universal speed assertion; numbers are unmistakably simulated; GPU execution stays in GEX.
 
-Known scope: scripted token content and illustrative tokenizer; conservative full-request KV reservations; fixed-tick synthetic costs; no real model execution, measured traces, prefix cache, speculative decode, EOS, cancellation or distributed serving. Atlas/GEX integration is contextual linking, not shared execution state. Custom-domain binding and root portfolio registration are outside this release. The GitHub/Azure publication process is documented in deployment.md.
+Known scope: scripted token content and illustrative tokenizer; conservative full-request KV reservations; fixed-tick synthetic costs; no real model execution, measured traces, prefix cache, speculative decode, EOS, cancellation or distributed serving. Atlas/GEX integration is contextual linking, not shared execution state. Custom-domain binding and root portfolio registration were outside that initial QA pass. Both now have existing public surfaces; their current availability must be checked independently. The GitHub/Azure publication process is documented in deployment.md.
