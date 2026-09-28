@@ -21,8 +21,11 @@ Open http://127.0.0.1:5299. Vite uses a strict project-specific port and does no
 npm run lint
 npm test
 npm run build
+npm run test:e2e
 npm run preview
 ```
+
+`npm run test:e2e` runs the Playwright browser suite in `e2e/` against the production preview, covering manifest routes, locale switching, keyboard operation and responsive layout. It is part of `npm run validate` and CI.
 
 Production preview uses http://127.0.0.1:4299. Static artifact: `dist/`. Azure routing and security headers are included in `public/staticwebapp.config.json`; no Azure resource or DNS record is created by the build.
 
