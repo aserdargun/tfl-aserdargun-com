@@ -9,13 +9,75 @@
       content="Follow a simulated LLM request through queueing, prefill, KV cache, decode and token delivery. Nine experiments and ten guided checkpoints; no model or hardware benchmark runs."
     />
     <title>TFL — Token Flow Laboratory</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=family-green-1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=family-green-1" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=family-green-1" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon-32.png?v=family-green-1"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/favicon.svg?v=family-green-1"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/apple-touch-icon.png?v=family-green-1"
+    />
     <link rel="canonical" href="https://tfl.aserdargun.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Token Flow Laboratory" />
+    <meta property="og:title" content="TFL — Token Flow Laboratory" />
+    <meta
+      property="og:description"
+      content="Explore nine deterministic serving experiments and ten guided checkpoints: queueing, prefill, KV reservations, decode and token delivery. Compare scheduling, latency and throughput; token text is scripted and timings are synthetic, with no model execution or hardware benchmark."
+    />
+    <meta property="og:url" content="https://tfl.aserdargun.com/" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="TFL — Token Flow Laboratory" />
+    <meta
+      name="twitter:description"
+      content="Explore nine deterministic serving experiments and ten guided checkpoints: queueing, prefill, KV reservations, decode and token delivery. Compare scheduling, latency and throughput; token text is scripted and timings are synthetic, with no model execution or hardware benchmark."
+    />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main>
+        <h1>TFL — Token Flow Laboratory</h1>
+        <p>
+          An interactive, deterministic simulation of how a language-model
+          serving system carries one request from prompt to next token.
+          Everything runs in your browser as a teaching model.
+        </p>
+        <p>
+          <strong>Scope:</strong> timings, capacities and token text are
+          synthetic. No model, neural network or inference engine runs here, no
+          hardware benchmark is executed, and tokenization is illustrative.
+          Time-to-first-token is calculated from simulated events, not measured
+          latency.
+        </p>
+        <h2>What it covers</h2>
+        <ul>
+          <li>
+            Queueing, prefill, KV-cache reservations, decode steps and token
+            delivery.
+          </li>
+          <li>
+            Nine experiments: one request, load storm, steady arrivals, 32K
+            context, code generation, many short users, KV wall, overload and
+            batching trade-off.
+          </li>
+          <li>Ten guided checkpoints in Token Flow 101.</li>
+          <li>
+            Assumptions and evidence shown beside every result, so a simulated
+            number is never read as a measurement.
+          </li>
+        </ul>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
