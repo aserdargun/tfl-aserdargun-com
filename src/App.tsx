@@ -30,6 +30,7 @@ import {
 import { MemoryPanel } from "./components/MemoryPanel";
 import { MetricsPanel } from "./components/MetricsPanel";
 import { ContextPanel } from "./components/ContextPanel";
+import { ConceptPanel } from "./components/ConceptPanel";
 import { exportSimulation } from "./core/export";
 import { ExportDialog } from "./components/ExportDialog";
 import { lessons } from "./lessons/lessons";
@@ -643,6 +644,7 @@ export default function App() {
           </details>
         </LabShell>
         <ContextPanel t={t} locale={locale} />
+        <ConceptPanel locale={locale} />
         <footer>
           <span>
             {t(

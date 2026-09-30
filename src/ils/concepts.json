@@ -1,51 +1,13 @@
 [
   {
-    "id": "concept:gpu-anatomy",
-    "label": {
-      "en": "GPU anatomy",
-      "tr": "GPU anatomisi"
-    }
-  },
-  {
     "id": "concept:gpu-memory",
     "label": {
       "en": "GPU memory",
       "tr": "GPU belleği"
-    }
-  },
-  {
-    "id": "concept:sm",
-    "label": {
-      "en": "Streaming multiprocessor",
-      "tr": "Akış çoklu işlemcisi"
-    }
-  },
-  {
-    "id": "concept:simt",
-    "label": {
-      "en": "SIMT",
-      "tr": "SIMT"
-    }
-  },
-  {
-    "id": "concept:kernel-execution",
-    "label": {
-      "en": "Kernel execution",
-      "tr": "Kernel yürütmesi"
-    }
-  },
-  {
-    "id": "concept:warp-divergence",
-    "label": {
-      "en": "Warp divergence",
-      "tr": "Warp dallanması"
-    }
-  },
-  {
-    "id": "concept:tensor-compute",
-    "label": {
-      "en": "Tiled matrix computation",
-      "tr": "Döşemeli matris hesaplama"
+    },
+    "body": {
+      "en": "The memory holding model weights, the KV cache and working buffers. Its capacity decides how many concurrent requests fit.",
+      "tr": "Model ağırlıklarının, KV cache'in ve çalışma tamponlarının yerleştiği bellek. Kapasite, aynı anda kaç isteğin sığacağını belirler."
     }
   },
   {
@@ -53,6 +15,10 @@
     "label": {
       "en": "Prefill",
       "tr": "Ön doldurma"
+    },
+    "body": {
+      "en": "The stage that runs the input context through the model to produce the distributions for the next token. The whole input is processed at once, so its cost grows with context length.",
+      "tr": "Girdi bağlamının modelden geçirilip sonraki token için dağıtımların üretildiği aşama. Tüm girdi aynı anda işlendiği için süre, bağlam uzunluğuyla birlikte artar."
     }
   },
   {
@@ -60,6 +26,10 @@
     "label": {
       "en": "Decode",
       "tr": "Çözümleme"
+    },
+    "body": {
+      "en": "The stage that generates one token at a time and feeds its own output back into the context. Every step reads the context again.",
+      "tr": "Modelin bir seferde tek token üretip sonra kendi çıktısını bağlama geri beslediği aşama. Her adım bağlamı yeniden okur."
     }
   },
   {
@@ -67,6 +37,10 @@
     "label": {
       "en": "Time to first token",
       "tr": "İlk tokena kadar süre"
+    },
+    "body": {
+      "en": "The time between sending a request and the first token reaching the user. Prefill time and queueing delay both contribute.",
+      "tr": "İstek gönderildiği anda ile ilk token'ın kullanıcıya ulaştığı an arasındaki süre. Prefill süresi ve kuyruk gecikmesi bu değeri birlikte belirler."
     }
   },
   {
@@ -74,6 +48,10 @@
     "label": {
       "en": "Concurrent requests",
       "tr": "Eşzamanlı istekler"
+    },
+    "body": {
+      "en": "Handling several requests at the same time. As request count rises, memory and compute pressure rise too, and requests can slow each other down.",
+      "tr": "Aynı anda birden fazla isteğin işlenmesi. İstek sayısı arttıkça bellek ve çekirdek baskısı da artar ve istekler birbirini yavaşlatabilir."
     }
   },
   {
@@ -81,6 +59,10 @@
     "label": {
       "en": "Scheduling",
       "tr": "Zamanlama"
+    },
+    "body": {
+      "en": "The policy that orders waiting requests and distributes them across devices. The policy affects latency and throughput together.",
+      "tr": "Bekleyen istekleri sıraya alıp çekirdekler arasında nasıl paylaştıran politika. Politika, gecikmeyi ve toplam verimi birlikte etkiler."
     }
   },
   {
@@ -88,6 +70,10 @@
     "label": {
       "en": "Context window",
       "tr": "Bağlam penceresi"
+    },
+    "body": {
+      "en": "The maximum number of tokens the model can condition on in one step. The system prompt, template, input and prior turns share this budget.",
+      "tr": "Modelin tek adımda koşullandırılabileceği en fazla token sayısı. Sistem, şablon, girdi ve geçmiş yanıt bu bütçeyi birlikte paylaşır."
     }
   },
   {
@@ -95,6 +81,10 @@
     "label": {
       "en": "KV cache",
       "tr": "KV önbellek"
+    },
+    "body": {
+      "en": "Memory holding the Key and Value vectors computed for each generated token. It avoids recomputation during decode, at the cost of memory that grows with context.",
+      "tr": "Üretilen her token için hesaplanan Key ve Value vektörlerini saklayan bellek. Decode aşamasında tekrar hesap yapmayı önler; uzun bağlamda bellek maliyetini artırır."
     }
   },
   {
@@ -102,6 +92,10 @@
     "label": {
       "en": "Prompt",
       "tr": "İstem"
+    },
+    "body": {
+      "en": "The text given to the model that enters the conditioning context. Template, system instruction and user input all draw on the same budget.",
+      "tr": "Modele verilen ve koşullandırma bağlamına giren metin. Şablon, sistem talimatı ve kullanıcı girdisi bu bütçeyi birlikte tüketir."
     }
   },
   {
@@ -109,6 +103,10 @@
     "label": {
       "en": "Tokenization",
       "tr": "Tokenlaştırma"
+    },
+    "body": {
+      "en": "The step that splits text into the numeric pieces the model processes. The same text can become a different number of tokens under a different tokenizer.",
+      "tr": "Metni modelin işlediği sayısal parçalara ayırma adımı. Aynı metin farklı tokenizer'larla farklı sayıda token'a dönüşebilir."
     }
   },
   {
@@ -116,6 +114,10 @@
     "label": {
       "en": "Token streaming",
       "tr": "Token iletimi"
+    },
+    "body": {
+      "en": "Delivering generated tokens one at a time per request. Time to first token separates from the total completion time of the whole answer.",
+      "tr": "Üretilen token'ların istek başına tek tek gönderilmesi. İlk token'ın gecikmesi ile tüm yanıtın tamamlanma süresi birbirinden ayrılır."
     }
   }
 ]
