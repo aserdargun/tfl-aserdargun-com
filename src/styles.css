@@ -1834,6 +1834,46 @@ td button {
   font-weight: 500;
   margin-bottom: 8px;
 }
+.scheduler-explainer > .scheduler-provenance {
+  display: block;
+  padding: 26px 0 6px;
+  border-top: 1px solid var(--line, #2a2f3a);
+}
+.scheduler-provenance h3 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink, #e8eaed);
+  margin: 0 0 6px;
+}
+.scheduler-provenance article {
+  margin: 0 0 20px;
+  padding-left: 13px;
+  border-left: 2px solid var(--mint);
+}
+.scheduler-provenance h4 {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.55;
+  margin: 0 0 8px;
+}
+.scheduler-provenance h4 a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.scheduler-provenance p {
+  margin: 0 0 8px;
+  max-width: 86ch;
+  line-height: 1.75;
+}
+.scheduler-provenance .provenance-differs {
+  color: var(--muted);
+}
+.scheduler-provenance .provenance-checked {
+  font-family: monospace;
+  font-size: 10px;
+  margin: 4px 0 0;
+}
 .scenario-catalog {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

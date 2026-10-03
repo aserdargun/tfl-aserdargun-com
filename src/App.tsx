@@ -35,6 +35,7 @@ import { exportSimulation } from "./core/export";
 import { ExportDialog } from "./components/ExportDialog";
 import { lessons } from "./lessons/lessons";
 import { lessonCheckpoint } from "./lessons/checkpoint";
+import { schedulerProvenance } from "./lessons/provenance";
 import type { Locale } from "./components/i18n";
 import { LabShell, LearningContextNotice } from "@aserdargun/lab-ui";
 import { manifest, experiments } from "./ils/catalog";
@@ -561,6 +562,31 @@ export default function App() {
                   "Rotate the first request receiving compute each tick. Admission still respects memory and slots; this is not a starvation guarantee.",
                   "Her adımda hesaplamayı ilk alan isteği döndür. Kabul bellek ve yer sınırlarına uyar; bu, aç kalmama garantisi değildir.",
                 )}
+              </p>
+            </div>
+            <div className="scheduler-provenance">
+              <h3>
+                {t(
+                  "Where the “-like” hedge comes from",
+                  "“Benzeri” temkininin kaynağı",
+                )}
+              </h3>
+              {schedulerProvenance.references.map((reference) => (
+                <article key={reference.id}>
+                  <h4>
+                    <a href={reference.url} rel="noreferrer" target="_blank">
+                      {reference.title}
+                    </a>
+                  </h4>
+                  <p>{t(reference.establishes.en, reference.establishes.tr)}</p>
+                  <p className="provenance-differs">
+                    {t(reference.differs.en, reference.differs.tr)}
+                  </p>
+                </article>
+              ))}
+              <p className="provenance-checked">
+                {t("Sources checked", "Kaynaklar kontrol edildi")}{" "}
+                {schedulerProvenance.checkedAt}
               </p>
             </div>
             <button
