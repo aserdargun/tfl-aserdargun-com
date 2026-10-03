@@ -13,13 +13,13 @@ import {
   addRequests,
   TICK_MS,
 } from "../src/core/simulation";
-import { requestMetrics, metrics } from "../src/core/metrics";
+import { requestMetrics, metrics, mean } from "../src/core/metrics";
 import {
   scenarioRequests,
   scenarioConfig,
   scenarios,
 } from "../src/core/scenarios";
-import type { Simulation, Config } from "../src/core/types";
+import type { Simulation, Config, ServingRequest } from "../src/core/types";
 const single = (overrides: Partial<Config> = {}) =>
   createSimulation(
     { ...defaultConfig, ...overrides },
@@ -359,4 +359,72 @@ it("replays late-added requests with identical event timestamps and metrics", ()
   const replayEnd = runToEnd(replay);
   expect(replayEnd.events).toEqual(originalEnd.events);
   expect(metrics(replayEnd)).toEqual(metrics(originalEnd));
+});
+
+describe("inter-token chart window", () => {
+  // The metrics chart draws a bounded tail of observed intervals. These keep the
+  // plotted window and the summary a screen reader is given describing the same
+  // values, so the accessible name never outgrows the bars it labels.
+  const ITL_WINDOW = 32;
+  const windowed = (s: Simulation, r: ServingRequest) => {
+    const intervals = requestMetrics(s, r).intervals;
+    const visible = intervals.slice(-ITL_WINDOW);
+    return {
+      intervals,
+      visible,
+      min: Math.min(...visible),
+      max: Math.max(...visible),
+      mean: mean(visible),
+    };
+  };
+  it("reports the plotted range rather than every observed interval", () => {
+    const s = runToEnd(
+      createSimulation(
+        scenarioConfig("code"),
+        scenarioRequests("code", 1, 64, 128),
+      ),
+    );
+    const { intervals, visible, min, max, mean: plotted } = windowed(
+      s,
+      s.requests[0],
+    );
+    // The scripted answer is long enough that the window genuinely truncates.
+    expect(intervals.length).toBeGreaterThan(ITL_WINDOW);
+    expect(visible).toHaveLength(ITL_WINDOW);
+    expect(visible).toEqual(intervals.slice(-ITL_WINDOW));
+    // The summary describes only the drawn bars.
+    expect(Math.min(...visible)).toBe(min);
+    expect(Math.max(...visible)).toBe(max);
+    expect(plotted).toBe(mean(visible));
+    // ...and never implies a value outside the plotted window.
+    expect(min).toBeGreaterThanOrEqual(Math.min(...intervals));
+    expect(max).toBeLessThanOrEqual(Math.max(...intervals));
+  });
+  it("stays a fixed width however long the answer runs", () => {
+    const lengths = [16, 64, 128].map((output) => {
+      const s = runToEnd(
+        createSimulation(
+          scenarioConfig("code"),
+          scenarioRequests("code", 1, 64, output),
+        ),
+      );
+      return windowed(s, s.requests[0]).visible.length;
+    });
+    expect(Math.max(...lengths)).toBeLessThanOrEqual(ITL_WINDOW);
+    // A long answer cannot make the plotted set exceed the window.
+    expect(lengths[2]).toBe(ITL_WINDOW);
+  });
+  it("yields no window before a second token is delivered", () => {
+    const s = runToEnd(
+      createSimulation(scenarioConfig("single"), scenarioRequests("single")),
+    );
+    const r = s.requests[0];
+    const before = windowed(
+      s,
+      r,
+    );
+    // A single delivery produces no interval, so there is nothing to plot.
+    expect(requestMetrics(s, { ...r, tokenTimes: [0] }).intervals).toEqual([]);
+    expect(before.visible.length).toBeGreaterThan(0);
+  });
 });

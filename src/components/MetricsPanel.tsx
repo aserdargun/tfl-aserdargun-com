@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Simulation, Policy } from "../core/types";
-import { metrics, requestMetrics } from "../core/metrics";
+import { metrics, requestMetrics, mean } from "../core/metrics";
 import { Timeline } from "./Inspector";
 import { ms, num, type T } from "./i18n";
 import type { ExperimentDraft } from "./ScenarioControls";
@@ -31,6 +31,13 @@ export function MetricsPanel({
   const m = metrics(s);
   const r = s.requests.find((r) => r.id === selected);
   const rm = r ? requestMetrics(s, r) : null;
+  // The chart plots a bounded tail of the observed intervals. Bar heights keep
+  // scaling against every observed interval so the plot stays comparable, while
+  // the accessible name reports the range actually visible on screen.
+  const visible = rm?.intervals.slice(-32) ?? [];
+  const plottedMin = visible.length ? Math.min(...visible) : 0;
+  const plottedMax = visible.length ? Math.max(...visible) : 0;
+  const plottedMean = mean(visible);
   const [rows, setRows] = useState<Row[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -128,25 +135,31 @@ export function MetricsPanel({
             <h3>
               {t("Inter-token experience", "Tokenlar arası deneyim")} · {r.id}
             </h3>
-            <div
-              className="itl-chart"
-              role="img"
-              aria-label={t(
-                `Token intervals: ${rm?.intervals.join(", ")} milliseconds`,
-                `Token aralıkları: ${rm?.intervals.join(", ")} milisaniye`,
-              )}
-            >
-              {rm?.intervals.slice(-32).map((v, i) => (
-                <div key={i} title={`${v} ms`}>
-                  <span
-                    style={{
-                      height: `${Math.max(3, (v / Math.max(...rm.intervals, 1)) * 64)}px`,
-                    }}
-                  />
-                  <small>{v}</small>
-                </div>
-              ))}
-            </div>
+            {/* The window is bounded, so the accessible name describes exactly
+                the bars that are drawn: a count, a range and the plotted mean.
+                Reading out every interval would announce more values than the
+                chart shows, and unbounded as the answer grows. */}
+            {visible.length > 0 && (
+              <div
+                className="itl-chart"
+                role="img"
+                aria-label={t(
+                  `Delivery intervals for the last ${visible.length} token${visible.length === 1 ? "" : "s"}: ${num(plottedMin)} to ${num(plottedMax)} ms, plotted mean ${num(plottedMean, 1)} ms.`,
+                  `Son ${visible.length} token için iletim aralıkları: ${num(plottedMin)} - ${num(plottedMax)} ms, çizilen ortalama ${num(plottedMean, 1)} ms.`,
+                )}
+              >
+                {visible.map((v, i) => (
+                  <div key={i} title={`${v} ms`}>
+                    <span
+                      style={{
+                        height: `${Math.max(3, (v / Math.max(...rm!.intervals, 1)) * 64)}px`,
+                      }}
+                    />
+                    <small>{v}</small>
+                  </div>
+                ))}
+              </div>
+            )}
             {!rm?.intervals.length && (
               <p>
                 {t(
