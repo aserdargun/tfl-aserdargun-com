@@ -153,8 +153,8 @@ export default function App() {
       ?.setAttribute(
         "content",
         t(
-          "Follow a simulated LLM request through queueing, prefill, KV cache, decode and token delivery. Nine experiments and ten guided checkpoints; no model or hardware benchmark runs.",
-          "Simüle bir LLM isteğini kuyruk, ön doldurma, KV önbelleği, çözümleme ve token iletimi boyunca izle. Dokuz deney ve on rehberli kontrol noktası; gerçek model veya donanım kıyaslaması çalışmaz.",
+          `Follow a simulated LLM request through queueing, prefill, KV cache, decode and token delivery. ${scenarios.length} experiments and ${lessons.length} guided checkpoints; no model or hardware benchmark runs.`,
+          `Simüle bir LLM isteğini kuyruk, ön doldurma, KV önbelleği, çözümleme ve token iletimi boyunca izle. ${scenarios.length} deney ve ${lessons.length} rehberli kontrol noktası; gerçek model veya donanım kıyaslaması çalışmaz.`,
         ),
       );
     try {

@@ -46,11 +46,11 @@ export function LessonPanel({
             <ArrowLeft />
           </button>
           <span className="mono">
-            {String(index + 1).padStart(2, "0")} / 10
+            {String(index + 1).padStart(2, "0")} / {lessons.length}
           </span>
           <button
             aria-label={t("Next chapter", "Sonraki bölüm")}
-            disabled={index === 9}
+            disabled={index === lessons.length - 1}
             onClick={() => onIndex(index + 1)}
           >
             <ArrowRight />
